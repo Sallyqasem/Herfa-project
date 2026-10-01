@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ثوب تطريز فلسطيني تقليدي - حرفة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+
+    /* --- Breadcrumb --- */
+    .breadcrumb {
+      display: flex; align-items: center; gap: 8px;
+      font-size: var(--text-sm); color: var(--color-text-muted);
+      padding-block: var(--space-2); flex-wrap: wrap;
+    }
+    .breadcrumb a { color: var(--color-text-secondary); transition: color var(--transition-fast); }
+    .breadcrumb a:hover { color: var(--color-primary); }
+    .breadcrumb__sep { color: var(--color-border-dark); }
+    .breadcrumb__current { color: var(--color-primary); font-weight: var(--fw-medium); }
+
+    /* --- Product Layout --- */
+    .product-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-8);
+      align-items: start;
+      padding-block: var(--space-4) var(--space-8);
+    }
+
+    /* --- Gallery --- */
+    .gallery { display: grid; grid-template-columns: 84px 1fr; gap: var(--space-2); position: sticky; top: calc(72px + var(--space-3)); }
+    .gallery__thumbs { display: flex; flex-direction: column; gap: var(--space-2); }
+    .gallery__thumb {
+      width: 84px; height: 84px;
+      border-radius: var(--radius-md);
+      border: 2px solid var(--color-border);
+      background: linear-gradient(135deg, var(--color-bg-alt), #E8D5C0);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; cursor: pointer; overflow: hidden;
+      transition: all var(--transition-fast); flex-shrink: 0;
+    }
+    .gallery__thumb:hover { border-color: var(--color-primary-light); }
+    .gallery__thumb.active { border-color: var(--color-primary); box-shadow: 0 0 0 2px rgba(192,113,79,0.15); }
+    .gallery__main {
+      position: relative; aspect-ratio: 1/1;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, var(--color-bg-alt), #E8D5C0);
+      border: 1px solid var(--color-border);
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .gallery__main-placeholder { font-size: 120px; opacity: 0.6; transition: opacity 0.2s ease; }
+    .gallery__badges { position: absolute; top: var(--space-2); right: var(--space-2); display: flex; flex-direction: column; gap: 6px; z-index: 2; }
+    .gallery__zoom-hint {
+      position: absolute; bottom: var(--space-2); left: var(--space-2);
+      background: rgba(44,26,14,0.55); color: var(--color-text-inverse);
+      font-size: var(--text-xs); padding: 6px 12px; border-radius: var(--radius-full);
+      backdrop-filter: blur(4px); display: flex; align-items: center; gap: 6px;
+    }
+
+    /* --- Product Info --- */
+    .product-info__artisan { display: flex; align-items: center; gap: 10px; margin-bottom: var(--space-2); }
+    .product-info__artisan-avatar {
+      width: 36px; height: 36px; border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--font-display); font-weight: var(--fw-bold); color: white; font-size: var(--text-sm);
+      flex-shrink: 0;
+    }
+    .product-info__artisan-link { font-size: var(--text-sm); font-weight: var(--fw-medium); color: var(--color-primary); display: flex; align-items: center; gap: 4px; }
+    .product-info__artisan-link:hover { color: var(--color-primary-dark); }
+    .product-info__artisan-city { font-size: var(--text-sm); color: var(--color-text-muted); }
+    .product-info__title { font-family: var(--font-display); font-size: var(--text-3xl); font-weight: var(--fw-bold); line-height: var(--lh-tight); margin-bottom: var(--space-2); }
+    .product-info__rating-row { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3); flex-wrap: wrap; }
+    .product-info__rating-row .stars { font-size: var(--text-base); }
+    .product-info__rating-count { font-size: var(--text-sm); color: var(--color-text-secondary); }
+    .product-info__rating-count a { color: var(--color-primary); font-weight: var(--fw-medium); }
+    .product-info__rating-count a:hover { text-decoration: underline; }
+    .product-info__sold { font-size: var(--text-sm); color: var(--color-text-muted); }
+    .product-info__price-block { display: flex; align-items: baseline; gap: var(--space-2); margin-bottom: var(--space-1); }
+    .product-info__price { font-family: var(--font-display); font-size: var(--text-4xl); font-weight: var(--fw-extrabold); color: var(--color-primary); line-height: 1; }
+    .product-info__price-old { font-size: var(--text-lg); color: var(--color-text-muted); text-decoration: line-through; }
+    .product-info__discount-note { font-size: var(--text-sm); color: var(--color-success); font-weight: var(--fw-medium); margin-bottom: var(--space-3); }
+    .product-info__desc { font-size: var(--text-base); color: var(--color-text-secondary); line-height: var(--lh-loose); margin-bottom: var(--space-4); }
+
+    /* --- Variant selectors --- */
+    .variant-group { margin-bottom: var(--space-3); }
+    .variant-group__label { display: flex; align-items: baseline; justify-content: space-between; font-size: var(--text-sm); font-weight: var(--fw-medium); color: var(--color-text-secondary); margin-bottom: var(--space-1); }
+    .variant-group__label span:last-child { color: var(--color-text-primary); font-weight: var(--fw-semibold); }
+    .variant-options { display: flex; gap: var(--space-1); flex-wrap: wrap; }
+    .variant-swatch { width: 40px; height: 40px; border-radius: var(--radius-full); border: 2px solid var(--color-border); cursor: pointer; position: relative; transition: all var(--transition-fast); padding: 2px; }
+    .variant-swatch span { display: block; width: 100%; height: 100%; border-radius: var(--radius-full); }
+    .variant-swatch:hover { border-color: var(--color-border-dark); }
+    .variant-swatch.active { border-color: var(--color-primary); }
+    .variant-swatch.active::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.4); }
+    .variant-pill { padding: 10px 20px; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface); font-size: var(--text-sm); font-weight: var(--fw-medium); color: var(--color-text-primary); cursor: pointer; transition: all var(--transition-fast); }
+    .variant-pill:hover { border-color: var(--color-primary-light); }
+    .variant-pill.active { border-color: var(--color-primary); background: var(--color-primary); color: white; }
+    .variant-pill.unavailable { color: var(--color-text-muted); text-decoration: line-through; cursor: not-allowed; background: var(--color-bg-alt); }
+    .size-guide-link { font-size: var(--text-sm); color: var(--color-primary); font-weight: var(--fw-medium); display: inline-flex; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; }
+    .size-guide-link:hover { text-decoration: underline; }
+
+    /* --- Quantity stepper --- */
+    .qty-stepper { display: inline-flex; align-items: center; border: 1.5px solid var(--color-border); border-radius: var(--radius-md); overflow: hidden; }
+    .qty-stepper button { width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; font-size: var(--text-xl); color: var(--color-text-secondary); transition: all var(--transition-fast); }
+    .qty-stepper button:hover { background: var(--color-bg-alt); color: var(--color-primary); }
+    .qty-stepper input { width: 52px; height: 44px; text-align: center; border: none; border-inline: 1.5px solid var(--color-border); font-size: var(--text-base); font-weight: var(--fw-semibold); color: var(--color-text-primary); background: var(--color-surface); }
+    .qty-stepper input:focus { outline: none; }
+    .stock-note { font-size: var(--text-sm); font-weight: var(--fw-medium); display: flex; align-items: center; gap: 6px; }
+    .stock-note--in { color: var(--color-success); }
+    .stock-note--low { color: var(--color-warning); }
+
+    /* --- Purchase row --- */
+    .purchase-row { display: flex; align-items: center; gap: var(--space-2); margin-block: var(--space-4); flex-wrap: wrap; }
+    .purchase-row__actions { display: flex; gap: var(--space-2); flex: 1; min-width: 260px; }
+    .icon-btn-outline { width: 52px; height: 52px; border-radius: var(--radius-md); border: 1.5px solid var(--color-border); display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary); transition: all var(--transition-fast); background: var(--color-surface); flex-shrink: 0; }
+    .icon-btn-outline:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .icon-btn-outline.active { border-color: #E53E3E; color: #E53E3E; }
+    .icon-btn-outline.active svg { fill: #E53E3E; stroke: #E53E3E; }
+
+    /* --- Trust badges --- */
+    .trust-list { display: flex; flex-direction: column; gap: var(--space-1); padding: var(--space-3); background: var(--color-surface-warm); border: 1px solid var(--color-border); border-radius: var(--radius-lg); margin-bottom: var(--space-4); }
+    .trust-item { display: flex; align-items: center; gap: 10px; font-size: var(--text-sm); color: var(--color-text-secondary); }
+    .trust-item svg { color: var(--color-primary); flex-shrink: 0; }
+
+    /* --- Share row --- */
+    .share-row { display: flex; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-muted); }
+    .share-row__links { display: flex; gap: 8px; }
+    .share-row__links a { width: 34px; height: 34px; border-radius: var(--radius-full); border: 1px solid var(--color-border); display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary); transition: all var(--transition-fast); }
+    .share-row__links a:hover { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-bg-alt); }
+
+    /* --- Tabs --- */
+    .product-tabs { border-bottom: 1px solid var(--color-border); display: flex; gap: var(--space-4); margin-bottom: var(--space-4); overflow-x: auto; }
+    .product-tabs__btn { padding: var(--space-2) 0; font-size: var(--text-lg); font-weight: var(--fw-semibold); color: var(--color-text-muted); position: relative; white-space: nowrap; transition: color var(--transition-fast); border: none; background: none; cursor: pointer; font-family: var(--font-body); }
+    .product-tabs__btn::after { content: ''; position: absolute; bottom: -1px; right: 0; left: 0; height: 3px; background: var(--color-primary); border-radius: var(--radius-full) var(--radius-full) 0 0; opacity: 0; transition: opacity var(--transition-fast); }
+    .product-tabs__btn.active { color: var(--color-primary); }
+    .product-tabs__btn.active::after { opacity: 1; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .tab-description p { color: var(--color-text-secondary); line-height: var(--lh-loose); margin-bottom: var(--space-2); }
+    .tab-description ul { display: flex; flex-direction: column; gap: 8px; margin-top: var(--space-2); }
+    .tab-description li { display: flex; align-items: flex-start; gap: 10px; font-size: var(--text-base); color: var(--color-text-secondary); line-height: var(--lh-normal); }
+    .tab-description li svg { color: var(--color-primary); flex-shrink: 0; margin-top: 3px; }
+
+    .specs-table { width: 100%; border-collapse: collapse; }
+    .specs-table tr { border-bottom: 1px solid var(--color-border); }
+    .specs-table tr:last-child { border-bottom: none; }
+    .specs-table th, .specs-table td { padding: var(--space-2) 0; text-align: right; font-size: var(--text-base); }
+    .specs-table th { color: var(--color-text-secondary); font-weight: var(--fw-medium); width: 35%; }
+    .specs-table td { color: var(--color-text-primary); font-weight: var(--fw-medium); }
+
+    .care-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); }
+    .care-item { text-align: center; padding: var(--space-3); background: var(--color-surface-warm); border: 1px solid var(--color-border); border-radius: var(--radius-lg); }
+    .care-item__icon { font-size: 32px; margin-bottom: var(--space-1); }
+    .care-item__label { font-size: var(--text-sm); color: var(--color-text-secondary); font-weight: var(--fw-medium); }
+
+    .reviews-summary { display: grid; grid-template-columns: 220px 1fr; gap: var(--space-6); padding: var(--space-4); background: var(--color-surface-warm); border: 1px solid var(--color-border); border-radius: var(--radius-lg); margin-bottom: var(--space-4); }
+    .reviews-summary__score { text-align: center; border-inline-end: 1px solid var(--color-border); padding-inline-end: var(--space-4); }
+    .reviews-summary__number { font-family: var(--font-display); font-size: var(--text-5xl); font-weight: var(--fw-extrabold); color: var(--color-primary); line-height: 1; }
+    .reviews-summary__stars { justify-content: center; margin-block: var(--space-1); font-size: var(--text-lg); }
+    .reviews-summary__total { font-size: var(--text-sm); color: var(--color-text-muted); }
+    .rating-bar-row { display: grid; grid-template-columns: 60px 1fr 40px; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 6px; }
+    .rating-bar-track { height: 8px; background: var(--color-border); border-radius: var(--radius-full); overflow: hidden; }
+    .rating-bar-fill { height: 100%; background: #F5A623; border-radius: var(--radius-full); }
+
+    .review-card { padding: var(--space-3) 0; border-bottom: 1px solid var(--color-border); }
+    .review-card:last-child { border-bottom: none; }
+    .review-card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-1); flex-wrap: wrap; gap: var(--space-1); }
+    .review-card__user { display: flex; align-items: center; gap: 10px; }
+    .review-card__avatar { width: 40px; height: 40px; border-radius: var(--radius-full); background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: var(--fw-bold); color: white; }
+    .review-card__name { font-weight: var(--fw-semibold); font-size: var(--text-base); }
+    .review-card__date { font-size: var(--text-xs); color: var(--color-text-muted); }
+    .review-card__verified { display: inline-flex; align-items: center; gap: 4px; font-size: var(--text-xs); color: var(--color-success); font-weight: var(--fw-medium); }
+    .review-card__text { color: var(--color-text-secondary); line-height: var(--lh-loose); margin-block: var(--space-1); }
+    .review-card__images { display: flex; gap: 8px; margin-block: var(--space-1); }
+    .review-card__images span { width: 64px; height: 64px; border-radius: var(--radius-md); background: var(--color-bg-alt); display: flex; align-items: center; justify-content: center; font-size: 24px; border: 1px solid var(--color-border); }
+    .review-card__helpful { display: inline-flex; align-items: center; gap: 6px; font-size: var(--text-sm); color: var(--color-text-muted); background: none; border: none; cursor: pointer; transition: color var(--transition-fast); }
+    .review-card__helpful:hover { color: var(--color-primary); }
+
+    .artisan-banner { display: grid; grid-template-columns: 120px 1fr auto; align-items: center; gap: var(--space-4); padding: var(--space-4); background: var(--color-bg-dark); border-radius: var(--radius-xl); color: var(--color-text-inverse); }
+    .artisan-banner__avatar { width: 96px; height: 96px; border-radius: var(--radius-full); background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--text-3xl); font-weight: var(--fw-bold); color: white; border: 3px solid rgba(232,168,124,0.4); }
+    .artisan-banner__name { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: var(--fw-bold); margin-bottom: 4px; }
+    .artisan-banner__meta { font-size: var(--text-sm); color: rgba(250,247,242,0.65); margin-bottom: var(--space-1); }
+    .artisan-banner__desc { font-size: var(--text-sm); color: rgba(250,247,242,0.8); line-height: var(--lh-normal); max-width: 480px; }
+    .artisan-banner__stats { display: flex; gap: var(--space-3); font-size: var(--text-sm); color: rgba(250,247,242,0.65); margin-top: var(--space-1); }
+    .artisan-banner__stats strong { color: var(--color-accent); font-family: var(--font-display); font-size: var(--text-lg); display: block; }
+
+    .sticky-bar { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--color-surface); border-top: 1px solid var(--color-border); padding: var(--space-2) var(--space-3); z-index: var(--z-sticky); box-shadow: 0 -4px 16px rgba(44,26,14,0.08); align-items: center; gap: var(--space-2); }
+    .sticky-bar__price { font-family: var(--font-display); font-weight: var(--fw-bold); font-size: var(--text-xl); color: var(--color-primary); flex-shrink: 0; }
+
+    @media (max-width: 1024px) {
+      .product-layout { grid-template-columns: 1fr; gap: var(--space-5); }
+      .gallery { position: static; grid-template-columns: 1fr; }
+      .gallery__thumbs { flex-direction: row; order: 2; overflow-x: auto; }
+      .gallery__main { order: 1; }
+      .care-grid { grid-template-columns: repeat(2, 1fr); }
+      .artisan-banner { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+      .artisan-banner__stats { justify-content: center; }
+    }
+    @media (max-width: 768px) {
+      .reviews-summary { grid-template-columns: 1fr; }
+      .reviews-summary__score { border-inline-end: none; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3); padding-inline-end: 0; }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .sticky-bar { display: flex; }
+      body { padding-bottom: 78px; }
+      .purchase-row__desktop-cart { display: none; }
+      .care-grid { grid-template-columns: repeat(2, 1fr); }
+      .gallery__main-placeholder { font-size: 80px; }
+    }
+    @media (max-width: 480px) {
+      .care-grid { grid-template-columns: 1fr 1fr; }
+      .products-grid { grid-template-columns: 1fr; }
+      .gallery__thumb { width: 64px; height: 64px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <header class="navbar">
+    <div class="navbar__inner">
+      <a href="../index.html" class="navbar__logo">حرفة</a>
+      <nav class="navbar__nav">
+        <a href="../index.html" class="navbar__link">الرئيسية</a>
+        <a href="shop.html" class="navbar__link active">المتجر</a>
+        <a href="about.html" class="navbar__link">من نحن</a>
+        <a href="artisans.html" class="navbar__link">الحرفيات</a>
+        <a href="contact.html" class="navbar__link">تواصل معنا</a>
+      </nav>
+      <div class="navbar__actions">
+        <a href="wishlist.html" class="navbar__icon-btn" aria-label="المفضلة">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </a>
+        <a href="cart.html" class="navbar__icon-btn" style="position:relative" aria-label="السلة">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="navbar__badge" style="display:none">0</span>
+        </a>
+        <a href="login.html" class="btn btn--primary btn--sm">دخول</a>
+        <button class="navbar__icon-btn navbar__mobile-toggle" style="display:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+
+      <!-- BREADCRUMB -->
+      <nav class="breadcrumb">
+        <a href="../index.html">الرئيسية</a>
+        <span class="breadcrumb__sep">/</span>
+        <a href="shop.html">المتجر</a>
+        <span class="breadcrumb__sep">/</span>
+        <a href="shop.html?cat=embroidery">التطريز</a>
+        <span class="breadcrumb__sep">/</span>
+        <span class="breadcrumb__current">ثوب تطريز فلسطيني تقليدي</span>
+      </nav>
+
+      <!-- PRODUCT LAYOUT -->
+      <section class="product-layout">
+
+        <!-- GALLERY -->
+        <div class="gallery">
+          <div class="gallery__thumbs">
+            <button class="gallery__thumb active" data-emoji="🧵" aria-label="صورة 1"><img src="/images/embroidered-abaya.jpg.jpg"></button>
+            <button class="gallery__thumb" data-emoji="🪡" aria-label="صورة 2">🪡</button>
+            <button class="gallery__thumb" data-emoji="👗" aria-label="صورة 3">👗</button>
+            <button class="gallery__thumb" data-emoji="📿" aria-label="صورة 4">📿</button>
+          </div>
+          <div class="gallery__main">
+            <div class="gallery__badges">
+              <span class="badge badge--primary">جديد</span>
+              <span class="badge badge--success">يدعم ٣ حرفيات</span>
+            </div>
+            <div class="gallery__main-placeholder" id="mainProductImage"><img src="/images/embroidered-abaya.jpg.jpg"></div>
+            <span class="gallery__zoom-hint">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+              تكبير
+            </span>
+          </div>
+        </div>
+
+        <!-- PRODUCT INFO -->
+        <div class="product-info">
+          <div class="product-info__artisan">
+            <div class="product-info__artisan-avatar">أ</div>
+            <a href="artisan-profile.html?id=1" class="product-info__artisan-link">
+              من تصميم: أم سامر
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6" transform="rotate(180 12 12)"/></svg>
+            </a>
+            <span class="product-info__artisan-city">• نابلس، فلسطين</span>
+          </div>
+
+          <h1 class="product-info__title">ثوب تطريز فلسطيني تقليدي بنقشة الخليل</h1>
+
+          <div class="product-info__rating-row">
+            <div class="stars">★★★★★</div>
+            <span class="product-info__rating-count">٤.٨ · <a href="#reviews">٢٤ تقييم</a></span>
+            <span class="product-info__sold">· بيع منه ١١٢ قطعة</span>
+          </div>
+
+          <div class="product-info__price-block">
+            <span class="product-info__price" id="productPrice">٣٢٠ ₪</span>
+            <span class="product-info__price-old">٣٨٠ ₪</span>
+            <span class="badge badge--error">خصم ١٦٪</span>
+          </div>
+          <p class="product-info__discount-note">العرض ساري حتى نهاية الأسبوع</p>
+
+          <p class="product-info__desc">
+            ثوب تطريز فلسطيني أصلي مصنوع يدوياً بالكامل من قماش القطن الفاخر، مطرز بنقشة "الخليل" التراثية بخيوط الحرير الملونة. كل غرزة تحمل بصمة الحرفية وتستغرق ما يقارب ٤٥ يوم عمل لإتمامها.
+          </p>
+
+          <!-- Color variant -->
+          <div class="variant-group">
+            <div class="variant-group__label"><span>اللون</span><span id="selectedColor">أسود تراثي</span></div>
+            <div class="variant-options">
+              <button class="variant-swatch active" onclick="selectColor(this,'أسود تراثي')" aria-label="أسود تراثي"><span style="background:#2C1A0E;"></span></button>
+              <button class="variant-swatch" onclick="selectColor(this,'كحلي')" aria-label="كحلي"><span style="background:#2C3E50;"></span></button>
+              <button class="variant-swatch" onclick="selectColor(this,'عنابي')" aria-label="عنابي"><span style="background:#7A1F2B;"></span></button>
+              <button class="variant-swatch" onclick="selectColor(this,'كريمي')" aria-label="كريمي"><span style="background:#E8DCC8;"></span></button>
+            </div>
+          </div>
+
+          <!-- Size variant -->
+          <div class="variant-group">
+            <div class="variant-group__label">
+              <span>المقاس</span>
+              <button class="size-guide-link" onclick="showToast('دليل المقاسات: S(36) M(38) L(40) XL(42)')">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                دليل المقاسات
+              </button>
+            </div>
+            <div class="variant-options">
+              <button class="variant-pill" onclick="selectSize(this)">S</button>
+              <button class="variant-pill active" onclick="selectSize(this)">M</button>
+              <button class="variant-pill" onclick="selectSize(this)">L</button>
+              <button class="variant-pill" onclick="selectSize(this)">XL</button>
+              <button class="variant-pill unavailable" disabled>XXL</button>
+            </div>
+          </div>
+
+          <!-- Quantity -->
+          <div class="variant-group">
+            <div class="variant-group__label"><span>الكمية</span></div>
+            <div style="display:flex; align-items:center; gap: var(--space-2); flex-wrap: wrap;">
+              <div class="qty-stepper">
+                <button type="button" onclick="changeProductQty(-1)">−</button>
+                <input type="number" value="1" min="1" max="6" id="productQty" readonly />
+                <button type="button" onclick="changeProductQty(1)">+</button>
+              </div>
+              <span class="stock-note stock-note--low">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                باقي ٦ قطع فقط في المخزون
+              </span>
+            </div>
+          </div>
+
+          <!-- Purchase row -->
+          <div class="purchase-row">
+            <div class="purchase-row__actions">
+              <button class="btn btn--primary btn--lg btn--full" onclick="addProductToCart()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                أضف للسلة
+              </button>
+              <a href="cart.html" class="btn btn--secondary btn--lg purchase-row__desktop-cart">شراء الآن</a>
+            </div>
+            <button class="icon-btn-outline" aria-label="إضافة للمفضلة" onclick="wishlist.toggle('p1'); this.classList.toggle('active')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+            <button class="icon-btn-outline" aria-label="مشاركة" onclick="showToast('جاري فتح خيارات المشاركة...')">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            </button>
+          </div>
+
+          <!-- Trust badges -->
+          <div class="trust-list">
+            <div class="trust-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L3 7v6c0 5 4 8 9 9 5-1 9-4 9-9V7l-9-5z"/></svg>
+              دفع آمن ١٠٠٪ — معالجة محمية للمعاملات
+            </div>
+            <div class="trust-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              التوصيل خلال ٣-٧ أيام عمل لجميع المدن الفلسطينية
+            </div>
+            <div class="trust-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>
+              إمكانية الاستبدال أو الإرجاع خلال ٧ أيام
+            </div>
+            <div class="trust-item">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              ١٠٠٪ من الأرباح تذهب مباشرة للحرفية
+            </div>
+          </div>
+
+          <!-- Share row -->
+          <div class="share-row">
+            <span>مشاركة:</span>
+            <div class="share-row__links">
+              <a href="#" onclick="showToast('جاري المشاركة عبر واتساب...'); return false;" aria-label="مشاركة واتساب">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              </a>
+              <a href="#" onclick="showToast('جاري المشاركة عبر فيسبوك...'); return false;" aria-label="مشاركة فيسبوك">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              </a>
+              <a href="#" onclick="showToast('تم نسخ الرابط ✓'); return false;" aria-label="نسخ الرابط">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TABS -->
+      <section class="section section--sm">
+        <div class="product-tabs">
+          <button class="product-tabs__btn active" onclick="switchProductTab('description', this)">الوصف</button>
+          <button class="product-tabs__btn" onclick="switchProductTab('specs', this)">المواصفات</button>
+          <button class="product-tabs__btn" onclick="switchProductTab('care', this)">العناية والتوصيل</button>
+          <button class="product-tabs__btn" onclick="switchProductTab('reviews', this)">التقييمات (٢٤)</button>
+        </div>
+
+        <!-- Description -->
+        <div class="tab-panel tab-description active" id="tab-description">
+          <p>هذا الثوب التراثي مستوحى من نقشة "الخليل" الشهيرة، وهي من أعرق أنواع التطريز الفلسطيني الأصيل. تم تطريزه بالكامل باليد على قماش قطني عالي الجودة باستخدام خيوط حرير طبيعية بألوان زاهية تعكس تراث المنطقة.</p>
+          <p>كل قطعة فريدة بحد ذاتها، وقد تختلف تفاصيل التطريز بشكل طفيف بين قطعة وأخرى نتيجة الطابع اليدوي للعمل — وهذا ما يجعلها أصيلة وغير قابلة للتكرار.</p>
+          <ul>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> تطريز يدوي ١٠٠٪ بخيوط حرير طبيعية</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> قماش قطني فاخر مريح ومناسب لجميع الفصول</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> نقشة "الخليل" التراثية الأصيلة</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> مدة التصنيع: حوالي ٤٥ يوم عمل لكل قطعة</li>
+            <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> يأتي مع شهادة توثيق من الحرفية تتضمن قصة القطعة</li>
+          </ul>
+        </div>
+
+        <!-- Specs -->
+        <div class="tab-panel" id="tab-specs">
+          <table class="specs-table">
+            <tbody>
+              <tr><th>الخامة</th><td>قطن ١٠٠٪ مع تطريز حرير طبيعي</td></tr>
+              <tr><th>نمط التطريز</th><td>نقشة الخليل التراثية</td></tr>
+              <tr><th>طريقة التصنيع</th><td>تطريز يدوي بالكامل</td></tr>
+              <tr><th>المقاسات المتوفرة</th><td>S, M, L, XL</td></tr>
+              <tr><th>الألوان المتوفرة</th><td>أسود تراثي، كحلي، عنابي، كريمي</td></tr>
+              <tr><th>العناية</th><td>غسيل يدوي بماء بارد، يُجفف بالظل</td></tr>
+              <tr><th>بلد المنشأ</th><td>فلسطين - مدينة نابلس</td></tr>
+              <tr><th>مدة التصنيع</th><td>٤٥ يوم عمل تقريباً</td></tr>
+              <tr><th>الوزن التقريبي</th><td>٦٥٠ غرام</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Care -->
+        <div class="tab-panel" id="tab-care">
+          <h4 style="margin-bottom: var(--space-2);">تعليمات العناية</h4>
+          <div class="care-grid" style="margin-bottom: var(--space-5);">
+            <div class="care-item"><div class="care-item__icon">🧺</div><div class="care-item__label">غسيل يدوي بماء بارد</div></div>
+            <div class="care-item"><div class="care-item__icon">🚫</div><div class="care-item__label">عدم استخدام مبيّض</div></div>
+            <div class="care-item"><div class="care-item__icon">☁️</div><div class="care-item__label">تجفيف بالظل</div></div>
+            <div class="care-item"><div class="care-item__icon">🔥</div><div class="care-item__label">كي بحرارة منخفضة من الخلف</div></div>
+          </div>
+          <h4 style="margin-bottom: var(--space-2);">الشحن والتوصيل</h4>
+          <p style="color: var(--color-text-secondary); line-height: var(--lh-loose); margin-bottom: var(--space-2);">يتم تجهيز القطعة وشحنها خلال ٢-٣ أيام عمل من تاريخ الطلب. مدة التوصيل المتوقعة:</p>
+          <table class="specs-table">
+            <tbody>
+              <tr><th>الضفة الغربية</th><td>٢-٣ أيام عمل</td></tr>
+              <tr><th>القدس</th><td>٢-٤ أيام عمل</td></tr>
+              <tr><th>قطاع غزة</th><td>٥-٧ أيام عمل (حسب الظروف)</td></tr>
+              <tr><th>تكلفة التوصيل</th><td>٢٠ ₪ — مجاني للطلبات فوق ٣٠٠ ₪</td></tr>
+            </tbody>
+          </table>
+          <h4 style="margin-block: var(--space-3) var(--space-2);">سياسة الاستبدال والإرجاع</h4>
+          <p style="color: var(--color-text-secondary); line-height: var(--lh-loose);">يمكنك طلب استبدال أو إرجاع القطعة خلال ٧ أيام من تاريخ الاستلام، بشرط أن تكون بحالتها الأصلية ولم تُستخدم. لأن كل قطعة مصنوعة يدوياً بطلب خاص، يُرجى مراجعة دليل المقاسات بعناية قبل الطلب.</p>
+        </div>
+
+        <!-- Reviews -->
+        <div class="tab-panel" id="tab-reviews">
+          <div class="reviews-summary" id="reviews">
+            <div class="reviews-summary__score">
+              <div class="reviews-summary__number">٤.٨</div>
+              <div class="stars reviews-summary__stars">★★★★★</div>
+              <div class="reviews-summary__total">من ٢٤ تقييم</div>
+              <button class="btn btn--secondary btn--sm" style="margin-top: var(--space-2);" onclick="showToast('جاري فتح نموذج التقييم...')">أضيفي تقييمك</button>
+            </div>
+            <div class="reviews-summary__breakdown">
+              <div class="rating-bar-row"><span>٥ نجوم</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:83%"></div></div><span>٢٠</span></div>
+              <div class="rating-bar-row"><span>٤ نجوم</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:13%"></div></div><span>٣</span></div>
+              <div class="rating-bar-row"><span>٣ نجوم</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:4%"></div></div><span>١</span></div>
+              <div class="rating-bar-row"><span>٢ نجوم</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:0%"></div></div><span>٠</span></div>
+              <div class="rating-bar-row"><span>١ نجمة</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:0%"></div></div><span>٠</span></div>
+            </div>
+          </div>
+
+          <div class="review-card">
+            <div class="review-card__header">
+              <div class="review-card__user">
+                <div class="review-card__avatar">س</div>
+                <div><p class="review-card__name">سارة أبو علي</p><p class="review-card__date">منذ ١٢ يوم · رام الله</p></div>
+              </div>
+              <span class="review-card__verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> عملية شراء موثقة</span>
+            </div>
+            <div class="stars">★★★★★</div>
+            <p class="review-card__text">اشتريت الثوب لأمي وكانت سعيدة جداً، الجودة ممتازة والتطريز دقيق جداً، يستحق كل قرش</p>
+            <div class="review-card__images"><span>🧵</span><span>👗</span></div>
+            <button class="review-card__helpful" onclick="this.textContent='✓ شكراً لرأيك'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg> مفيد (١٢)
+            </button>
+          </div>
+
+          <div class="review-card">
+            <div class="review-card__header">
+              <div class="review-card__user">
+                <div class="review-card__avatar">ر</div>
+                <div><p class="review-card__name">ريم محمود</p><p class="review-card__date">منذ ٣ أسابيع · نابلس</p></div>
+              </div>
+              <span class="review-card__verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> عملية شراء موثقة</span>
+            </div>
+            <div class="stars">★★★★★</div>
+            <p class="review-card__text">المقاس مطابق تماماً لدليل المقاسات، والألوان كانت أجمل من الصور. التواصل مع الحرفية كان سهل جداً وردت على كل أسئلتي</p>
+            <button class="review-card__helpful" onclick="this.textContent='✓ شكراً لرأيك'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg> مفيد (٧)
+            </button>
+          </div>
+
+          <div class="review-card">
+            <div class="review-card__header">
+              <div class="review-card__user">
+                <div class="review-card__avatar">ن</div>
+                <div><p class="review-card__name">نور حمدان</p><p class="review-card__date">منذ شهر · القدس</p></div>
+              </div>
+              <span class="review-card__verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg> عملية شراء موثقة</span>
+            </div>
+            <div class="stars">★★★★☆</div>
+            <p class="review-card__text">قطعة فنية حقيقية، التغليف كان أنيق جداً وجاء معه بطاقة تشرح قصة الحرفية. التوصيل تأخر يومين عن الموعد لكن يستحق الانتظار</p>
+            <button class="review-card__helpful" onclick="this.textContent='✓ شكراً لرأيك'">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg> مفيد (٤)
+            </button>
+          </div>
+
+          <div class="section__cta"><button class="btn btn--secondary" onclick="showToast('جاري تحميل المزيد من التقييمات...')">عرض كل التقييمات (٢٤)</button></div>
+        </div>
+      </section>
+
+      <!-- ARTISAN BANNER -->
+      <section class="section section--sm">
+        <div class="artisan-banner">
+          <div class="artisan-banner__avatar">أ</div>
+          <div>
+            <h3 class="artisan-banner__name">أم سامر</h3>
+            <p class="artisan-banner__meta">نابلس، فلسطين · حرفية منذ ٢٠١٢</p>
+            <p class="artisan-banner__desc">متخصصة في التطريز الفلسطيني التقليدي، تتعلم النقشات من جدتها وتنقلها بدقة إلى كل قطعة. كل ثوب يُصنع بطلب خاص ويحمل توقيعها الخاص.</p>
+            <div class="artisan-banner__stats">
+              <div><strong>٤٧</strong>منتج</div>
+              <div><strong>٤.٩</strong>تقييم</div>
+              <div><strong>٣٢٠+</strong>طلب مكتمل</div>
+            </div>
+          </div>
+          <a href="artisan-profile.html?id=1" class="btn btn--ghost">زيارة المتجر</a>
+        </div>
+      </section>
+
+      <!-- RELATED PRODUCTS -->
+      <section class="section">
+        <div class="section__header">
+          <span class="section__eyebrow">قد يعجبك أيضاً</span>
+          <h2 class="section__title">منتجات مشابهة</h2>
+        </div>
+        <div class="products-grid">
+          <article class="product-card">
+            <div class="product-card__image-wrap">
+              <div class="product-card__image-placeholder">🧶</div>
+              <button class="product-card__wishlist" onclick="wishlist.toggle('p5'); this.classList.toggle('active')" aria-label="مفضلة">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </button>
+            </div>
+            <div class="product-card__body">
+              <p class="product-card__artisan">أم سامر - نابلس</p>
+              <h3 class="product-card__name">وسادة مطرزة بنقشة بيت لحم</h3>
+              <div class="product-card__rating"><div class="stars">★★★★★</div><span class="product-card__reviews">(١٦)</span></div>
+              <div class="product-card__footer">
+                <span class="product-card__price">١١٠ ₪</span>
+                <button class="btn btn--primary btn--sm" onclick="cart.add({id:'p5',name:'وسادة مطرزة',price:110})">أضف للسلة</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card">
+            <div class="product-card__image-wrap">
+              <div class="product-card__image-placeholder">👜</div>
+              <button class="product-card__wishlist" onclick="wishlist.toggle('p6'); this.classList.toggle('active')" aria-label="مفضلة">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </button>
+              <span class="badge badge--accent product-card__badge">الأكثر طلباً</span>
+            </div>
+            <div class="product-card__body">
+              <p class="product-card__artisan">أم سامر - نابلس</p>
+              <h3 class="product-card__name">حقيبة يد مطرزة بألوان تراثية</h3>
+              <div class="product-card__rating"><div class="stars">★★★★★</div><span class="product-card__reviews">(٣٢)</span></div>
+              <div class="product-card__footer">
+                <span class="product-card__price">١٨٠ ₪</span>
+                <button class="btn btn--primary btn--sm" onclick="cart.add({id:'p6',name:'حقيبة يد مطرزة',price:180})">أضف للسلة</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card">
+            <div class="product-card__image-wrap">
+              <div class="product-card__image-placeholder">👗</div>
+              <button class="product-card__wishlist" onclick="wishlist.toggle('p9'); this.classList.toggle('active')" aria-label="مفضلة">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </button>
+            </div>
+            <div class="product-card__body">
+              <p class="product-card__artisan">أم سامر - نابلس</p>
+              <h3 class="product-card__name">ثوب أطفال مطرز بنقشة مصغّرة</h3>
+              <div class="product-card__rating"><div class="stars">★★★★☆</div><span class="product-card__reviews">(٧)</span></div>
+              <div class="product-card__footer">
+                <span class="product-card__price">١٤٠ ₪</span>
+                <button class="btn btn--primary btn--sm" onclick="cart.add({id:'p9',name:'ثوب أطفال مطرز',price:140})">أضف للسلة</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card">
+            <div class="product-card__image-wrap">
+              <div class="product-card__image-placeholder">🏺</div>
+              <button class="product-card__wishlist" onclick="wishlist.toggle('p2'); this.classList.toggle('active')" aria-label="مفضلة">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </button>
+              <span class="badge badge--bg product-card__badge">خصم ٢٠٪</span>
+            </div>
+            <div class="product-card__body">
+              <p class="product-card__artisan">خديجة - الخليل</p>
+              <h3 class="product-card__name">إبريق خزف مزخرف يدوياً</h3>
+              <div class="product-card__rating"><div class="stars">★★★★☆</div><span class="product-card__reviews">(١٨)</span></div>
+              <div class="product-card__footer">
+                <span class="product-card__price">١٢٠ ₪</span>
+                <button class="btn btn--primary btn--sm" onclick="cart.add({id:'p2',name:'إبريق خزف',price:120})">أضف للسلة</button>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <p class="footer__logo">حرفة</p>
+          <p class="footer__desc">منصة رقمية تحتفي بالحرف اليدوية الفلسطينية وتمكّن الحرفيات من الوصول إلى أسواق أوسع مع الحفاظ على أصالة تراثنا</p>
+        </div>
+        <div>
+          <h4 class="footer__heading">المتجر</h4>
+          <ul class="footer__links">
+            <li><a href="shop.html" class="footer__link">جميع المنتجات</a></li>
+            <li><a href="shop.html?cat=embroidery" class="footer__link">التطريز</a></li>
+            <li><a href="shop.html?cat=pottery" class="footer__link">الخزف</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer__heading">المنصة</h4>
+          <ul class="footer__links">
+            <li><a href="about.html" class="footer__link">من نحن</a></li>
+            <li><a href="artisans.html" class="footer__link">الحرفيات</a></li>
+            <li><a href="contact.html" class="footer__link">تواصل معنا</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer__heading">المساعدة</h4>
+          <ul class="footer__links">
+            <li><a href="#" class="footer__link">الأسئلة الشائعة</a></li>
+            <li><a href="#" class="footer__link">سياسة الإرجاع</a></li>
+            <li><a href="#" class="footer__link">الشروط والأحكام</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="footer__divider" />
+      <div class="footer__bottom">
+        <p>© ٢٠٢٥ حرفة. جميع الحقوق محفوظة</p>
+        <p>صُنع بـ ♡ دعماً للحرفيات الفلسطينيات</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- STICKY MOBILE BAR -->
+  <div class="sticky-bar">
+    <span class="sticky-bar__price">٣٢٠ ₪</span>
+    <button class="btn btn--primary btn--full" onclick="addProductToCart()">أضف للسلة</button>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script>
+    let selectedColor = 'أسود تراثي';
+    let selectedSize  = 'M';
+
+    function selectColor(btn, color) {
+      document.querySelectorAll('.variant-swatch').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      selectedColor = color;
+      document.getElementById('selectedColor').textContent = color;
+    }
+
+    function selectSize(btn) {
+      document.querySelectorAll('.variant-pill').forEach(s => s.classList.remove('active'));
+      btn.classList.add('active');
+      selectedSize = btn.textContent.trim();
+    }
+
+    function changeProductQty(delta) {
+      const input = document.getElementById('productQty');
+      let val = parseInt(input.value) + delta;
+      val = Math.max(1, Math.min(6, val));
+      input.value = val;
+    }
+
+    function addProductToCart() {
+      const qty = parseInt(document.getElementById('productQty').value);
+      cart.add({ id: 'p1', name: 'ثوب تطريز فلسطيني تقليدي', price: 320, color: selectedColor, size: selectedSize });
+      for (let i = 1; i < qty; i++) cart.items[cart.items.length - 1].qty++;
+      cart.save(); cart.updateBadge();
+    }
+
+    function switchProductTab(tab, btn) {
+      document.querySelectorAll('.product-tabs__btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+    }
+
+    // Gallery thumbnail switching
+    document.querySelectorAll('.gallery__thumb').forEach(thumb => {
+      thumb.addEventListener('click', () => {
+        document.querySelectorAll('.gallery__thumb').forEach(t => t.classList.remove('active'));
+        thumb.classList.add('active');
+        document.getElementById('mainProductImage').textContent = thumb.dataset.emoji;
+      });
+    });
+
+    const toggle = document.querySelector('.navbar__mobile-toggle');
+    if (window.innerWidth <= 768) toggle.style.display = 'flex';
+    window.addEventListener('resize', () => {
+      toggle.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+    });
+  </script>
+</body>
+</html>

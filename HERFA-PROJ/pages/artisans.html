@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الحرفيات - حرفة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .artisans-hero {
+      background: linear-gradient(135deg, #3D2B1F 0%, #5C3D2A 50%, #7A4F35 100%);
+      padding: var(--space-10) 0;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .artisans-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(192,113,79,0.22) 0%, transparent 65%);
+    }
+    .artisans-hero__eyebrow { display:inline-block; font-size:var(--text-sm); font-weight:var(--fw-medium); letter-spacing:3px; text-transform:uppercase; color:var(--color-accent); margin-bottom:var(--space-2); position:relative; z-index:1; }
+    .artisans-hero__title { font-family:var(--font-display); font-size:var(--text-4xl); font-weight:var(--fw-extrabold); color:white; margin-bottom:var(--space-2); position:relative; z-index:1; }
+    .artisans-hero__subtitle { font-size:var(--text-lg); color:rgba(250,247,242,0.8); position:relative; z-index:1; }
+
+    .artisans-filter-bar { display:flex; align-items:center; gap:var(--space-2); margin-block:var(--space-5); flex-wrap:wrap; }
+    .af-chip { padding:8px 18px; border-radius:var(--radius-full); border:1.5px solid var(--color-border); background:var(--color-surface); font-size:var(--text-sm); font-weight:var(--fw-medium); color:var(--color-text-secondary); cursor:pointer; transition:all var(--transition-fast); }
+    .af-chip:hover { border-color:var(--color-primary-light); }
+    .af-chip.active { background:var(--color-primary); border-color:var(--color-primary); color:white; }
+    .af-search { margin-inline-start:auto; position:relative; min-width:240px; }
+    .af-search input { width:100%; padding:10px 16px 10px 40px; border:1.5px solid var(--color-border); border-radius:var(--radius-full); font-family:var(--font-body); font-size:var(--text-sm); background:var(--color-bg-alt); direction:rtl; }
+    .af-search input:focus { outline:none; border-color:var(--color-primary); background:white; }
+    .af-search svg { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--color-text-muted); }
+
+    .artisans-grid-page { display:grid; grid-template-columns:repeat(3, 1fr); gap:var(--space-4); margin-bottom:var(--space-8); }
+    .artisan-list-card {
+      background:var(--color-surface); border:1px solid var(--color-border); border-radius:var(--radius-xl);
+      padding:var(--space-4); text-align:center; transition:all var(--transition-normal); text-decoration:none; display:block;
+    }
+    .artisan-list-card:hover { box-shadow:var(--shadow-lg); transform:translateY(-4px); border-color:var(--color-border-dark); }
+    .artisan-list-card__avatar {
+      width:96px; height:96px; border-radius:var(--radius-full); margin:0 auto var(--space-3);
+      background:linear-gradient(135deg, var(--color-primary), var(--color-accent));
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-display); font-size:var(--text-3xl); font-weight:var(--fw-bold); color:white;
+      border:3px solid var(--color-border); position:relative;
+    }
+    .artisan-list-card__verified { position:absolute; bottom:-2px; left:-2px; width:28px; height:28px; background:var(--color-success); border:3px solid var(--color-surface); border-radius:50%; display:flex; align-items:center; justify-content:center; color:white; }
+    .artisan-list-card__name { font-family:var(--font-display); font-size:var(--text-xl); font-weight:var(--fw-bold); margin-bottom:4px; }
+    .artisan-list-card__city { font-size:var(--text-sm); color:var(--color-text-muted); margin-bottom:4px; }
+    .artisan-list-card__specialty { font-size:var(--text-sm); color:var(--color-primary); font-weight:var(--fw-medium); margin-bottom:var(--space-2); }
+    .artisan-list-card__stats { display:flex; justify-content:center; gap:var(--space-3); font-size:var(--text-xs); color:var(--color-text-muted); padding-top:var(--space-2); border-top:1px solid var(--color-border); }
+    .artisan-list-card__stats strong { color:var(--color-text-primary); font-weight:var(--fw-semibold); }
+
+    .become-cta {
+      background:linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      border-radius:var(--radius-2xl); padding:var(--space-8); text-align:center; color:white; margin-bottom:var(--space-10);
+    }
+    .become-cta h2 { color:white; font-size:var(--text-3xl); margin-bottom:var(--space-2); }
+    .become-cta p { color:rgba(255,255,255,0.85); max-width:480px; margin-inline:auto; margin-bottom:var(--space-4); line-height:var(--lh-loose); }
+    .become-cta .btn--primary { background:white; color:var(--color-primary); border-color:white; }
+    .become-cta .btn--primary:hover { background:var(--color-bg); }
+
+    @media (max-width:1024px){ .artisans-grid-page{ grid-template-columns:repeat(2,1fr);} }
+    @media (max-width:768px){
+      .artisans-grid-page{ grid-template-columns:1fr; }
+      .af-search{ margin-inline-start:0; width:100%; }
+      .artisans-filter-bar{ flex-direction:column; align-items:stretch; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="navbar__inner">
+      <a href="../index.html" class="navbar__logo">حرفة</a>
+      <nav class="navbar__nav">
+        <a href="../index.html" class="navbar__link">الرئيسية</a>
+        <a href="shop.html"     class="navbar__link">المتجر</a>
+        <a href="about.html"    class="navbar__link">من نحن</a>
+        <a href="artisans.html" class="navbar__link active">الحرفيات</a>
+        <a href="contact.html"  class="navbar__link">تواصل معنا</a>
+      </nav>
+      <div class="navbar__actions">
+        <a href="wishlist.html" class="navbar__icon-btn" aria-label="المفضلة">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </a>
+        <a href="cart.html" class="navbar__icon-btn" style="position:relative" aria-label="السلة">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="navbar__badge" style="display:none">0</span>
+        </a>
+        <a href="login.html" class="btn btn--primary btn--sm">دخول</a>
+        <button class="navbar__icon-btn navbar__mobile-toggle" style="display:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="artisans-hero">
+    <div class="container">
+      <span class="artisans-hero__eyebrow">مجتمعنا</span>
+      <h1 class="artisans-hero__title">تعرّفي على حرفياتنا</h1>
+      <p class="artisans-hero__subtitle">أكثر من ٢٠٠ حرفية فلسطينية موهوبة من ١٥ مدينة</p>
+    </div>
+  </section>
+
+  <main class="container">
+
+    <div class="artisans-filter-bar">
+      <button class="af-chip active" onclick="filterArtisan(this)">الكل</button>
+      <button class="af-chip" onclick="filterArtisan(this)">تطريز</button>
+      <button class="af-chip" onclick="filterArtisan(this)">خزف وفخار</button>
+      <button class="af-chip" onclick="filterArtisan(this)">نسيج</button>
+      <button class="af-chip" onclick="filterArtisan(this)">مجوهرات</button>
+      <div class="af-search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="search" placeholder="ابحثي عن حرفية أو مدينة..." />
+      </div>
+    </div>
+
+    <div class="artisans-grid-page">
+      <a href="artisan-profile.html?id=1" class="artisan-list-card">
+        <div class="artisan-list-card__avatar" >أ
+          <img src="/images/شخصية ام سامر.jpeg">
+          <span class="artisan-list-card__verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </div>
+        <h3 class="artisan-list-card__name">أم سامر</h3>
+        <p class="artisan-list-card__city">نابلس، فلسطين</p>
+        <p class="artisan-list-card__specialty">تطريز تقليدي</p>
+        <div class="artisan-list-card__stats"><span><strong>٤٧</strong> منتج</span><span><strong>٤.٩</strong> تقييم</span></div>
+      </a>
+
+      <a href="artisan-profile.html?id=2" class="artisan-list-card">
+        <div class="artisan-list-card__avatar">خ
+          <span class="artisan-list-card__verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </div>
+        <h3 class="artisan-list-card__name">خديجة حمدان</h3>
+        <p class="artisan-list-card__city">الخليل، فلسطين</p>
+        <p class="artisan-list-card__specialty">خزف وفخار</p>
+        <div class="artisan-list-card__stats"><span><strong>٢٣</strong> منتج</span><span><strong>٤.٨</strong> تقييم</span></div>
+      </a>
+
+      <a href="artisan-profile.html?id=3" class="artisan-list-card">
+        <div class="artisan-list-card__avatar">ف
+          <span class="artisan-list-card__verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </div>
+        <h3 class="artisan-list-card__name">فاطمة عيسى</h3>
+        <p class="artisan-list-card__city">بيت لحم، فلسطين</p>
+        <p class="artisan-list-card__specialty">نسيج يدوي</p>
+        <div class="artisan-list-card__stats"><span><strong>٣٥</strong> منتج</span><span><strong>٥.٠</strong> تقييم</span></div>
+      </a>
+
+      <a href="artisan-profile.html?id=4" class="artisan-list-card">
+        <div class="artisan-list-card__avatar">م
+          <span class="artisan-list-card__verified"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </div>
+        <h3 class="artisan-list-card__name">مريم سلامة</h3>
+        <p class="artisan-list-card__city">القدس، فلسطين</p>
+        <p class="artisan-list-card__specialty">مجوهرات فضية</p>
+        <div class="artisan-list-card__stats"><span><strong>١٩</strong> منتج</span><span><strong>٤.٧</strong> تقييم</span></div>
+      </a>
+
+      <a href="artisan-profile.html?id=5" class="artisan-list-card">
+        <div class="artisan-list-card__avatar">س</div>
+        <h3 class="artisan-list-card__name">سمر يوسف</h3>
+        <p class="artisan-list-card__city">رام الله، فلسطين</p>
+        <p class="artisan-list-card__specialty">صابون طبيعي</p>
+        <div class="artisan-list-card__stats"><span><strong>١٢</strong> منتج</span><span><strong>٤.٩</strong> تقييم</span></div>
+      </a>
+
+      <a href="artisan-profile.html?id=6" class="artisan-list-card">
+        <div class="artisan-list-card__avatar">د</div>
+        <h3 class="artisan-list-card__name">دانا خليل</h3>
+        <p class="artisan-list-card__city">القدس، فلسطين</p>
+        <p class="artisan-list-card__specialty">لوحات فنية</p>
+        <div class="artisan-list-card__stats"><span><strong>٨</strong> منتج</span><span><strong>٤.٩</strong> تقييم</span></div>
+      </a>
+    </div>
+
+    <div class="become-cta">
+      <h2>هل أنتِ حرفية؟</h2>
+      <p>انضمي لمنصة حرفة وابدأي ببيع إبداعاتك لآلاف العملاء. التسجيل مجاني ولا عمولة في الأشهر الثلاثة الأولى</p>
+      <a href="register-artisan.html" class="btn btn--primary btn--lg">سجلي كحرفية</a>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <p class="footer__logo">حرفة</p>
+          <p class="footer__desc">منصة رقمية تحتفي بالحرف اليدوية الفلسطينية</p>
+        </div>
+        <div>
+          <h4 class="footer__heading">المتجر</h4>
+          <ul class="footer__links">
+            <li><a href="shop.html" class="footer__link">جميع المنتجات</a></li>
+            <li><a href="shop.html?cat=embroidery" class="footer__link">التطريز</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer__heading">المنصة</h4>
+          <ul class="footer__links">
+            <li><a href="about.html" class="footer__link">من نحن</a></li>
+            <li><a href="contact.html" class="footer__link">تواصل معنا</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer__heading">المساعدة</h4>
+          <ul class="footer__links">
+            <li><a href="#" class="footer__link">الأسئلة الشائعة</a></li>
+            <li><a href="#" class="footer__link">سياسة الإرجاع</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="footer__divider" />
+      <div class="footer__bottom">
+        <p>© ٢٠٢٥ حرفة. جميع الحقوق محفوظة</p>
+        <p>صُنع بـ ♡ دعماً للحرفيات الفلسطينيات</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/app.js"></script>
+  <script>
+    function filterArtisan(btn) {
+      document.querySelectorAll('.af-chip').forEach(c => c.classList.remove('active'));
+      btn.classList.add('active');
+    }
+    const toggle = document.querySelector('.navbar__mobile-toggle');
+    if (window.innerWidth <= 768) toggle.style.display = 'flex';
+    window.addEventListener('resize', () => {
+      toggle.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>المفضلة - حرفة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+
+    .wishlist-page { padding-block: var(--space-8); }
+
+    .wishlist-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-6); flex-wrap: wrap; gap: var(--space-2);
+    }
+    .wishlist-header h1 {
+      font-family: var(--font-display);
+      font-size: var(--text-4xl); font-weight: var(--fw-bold);
+      margin-bottom: 6px;
+    }
+    .wishlist-header p { color: var(--color-text-secondary); }
+
+    .wishlist-actions { display: flex; gap: var(--space-2); }
+
+    /* Grid */
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-4);
+    }
+
+    .wish-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      transition: all var(--transition-normal);
+      position: relative;
+    }
+    .wish-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-4px); }
+    .wish-card.removing { opacity: 0; transform: scale(0.9); transition: all 0.3s ease; }
+
+    .wish-card__img {
+      position: relative;
+      aspect-ratio: 1/1;
+      background: linear-gradient(135deg, var(--color-bg-alt), #E8D5C0);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .wish-card__emoji { font-size: 60px; opacity: 0.75; transition: transform var(--transition-normal); }
+    .wish-card:hover .wish-card__emoji { transform: scale(1.1); }
+
+    .wish-card__remove {
+      position: absolute; top: 12px; left: 12px;
+      width: 36px; height: 36px;
+      border-radius: var(--radius-full);
+      background: rgba(255,255,255,0.92);
+      display: flex; align-items: center; justify-content: center;
+      color: #E53E3E;
+      border: none; cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .wish-card__remove:hover { background: white; box-shadow: var(--shadow-sm); transform: scale(1.08); }
+    .wish-card__remove svg { fill: #E53E3E; stroke: #E53E3E; }
+
+    .wish-card__badge { position: absolute; top: 12px; right: 12px; }
+
+    .wish-card__stock {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(192,57,43,0.92);
+      color: white; text-align: center;
+      font-size: var(--text-xs); font-weight: var(--fw-medium);
+      padding: 6px;
+    }
+
+    .wish-card__body { padding: var(--space-3); }
+    .wish-card__artisan { font-size: var(--text-xs); color: var(--color-primary); font-weight: var(--fw-medium); margin-bottom: 4px; }
+    .wish-card__name {
+      font-family: var(--font-display);
+      font-size: var(--text-base); font-weight: var(--fw-semibold);
+      margin-bottom: 8px; line-height: var(--lh-snug);
+      color: var(--color-text-primary);
+    }
+    .wish-card__meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); }
+    .wish-card__price { font-size: var(--text-xl); font-weight: var(--fw-bold); color: var(--color-primary); }
+    .wish-card__price-old { font-size: var(--text-xs); color: var(--color-text-muted); text-decoration: line-through; }
+    .wish-card__rating { display: flex; align-items: center; gap: 4px; font-size: var(--text-xs); color: var(--color-text-muted); }
+    .wish-card__stars { color: #F5A623; font-size: 11px; }
+
+    .wish-card__added {
+      font-size: var(--text-xs); color: var(--color-text-muted);
+      margin-bottom: var(--space-2);
+    }
+
+    .wish-card__btn {
+      width: 100%; padding: 10px;
+      background: var(--color-primary); color: white;
+      border: none; border-radius: var(--radius-full);
+      font-family: var(--font-body); font-size: var(--text-sm); font-weight: var(--fw-medium);
+      cursor: pointer; transition: all var(--transition-fast);
+    }
+    .wish-card__btn:hover { background: var(--color-primary-dark); }
+    .wish-card__btn:disabled {
+      background: var(--color-border); color: var(--color-text-muted); cursor: not-allowed;
+    }
+
+    /* Empty state */
+    .empty-wishlist { display: none; text-align: center; padding: var(--space-16) var(--space-4); }
+    .empty-wishlist.visible { display: block; }
+    .empty-wishlist__icon { font-size: 80px; margin-bottom: var(--space-3); }
+    .empty-wishlist__title { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: var(--fw-bold); margin-bottom: var(--space-2); }
+    .empty-wishlist__msg { color: var(--color-text-secondary); margin-bottom: var(--space-4); line-height: var(--lh-loose); }
+
+    /* Share bar */
+    .share-bar {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-xl);
+      padding: var(--space-3) var(--space-4);
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: var(--space-5);
+      flex-wrap: wrap; gap: var(--space-2);
+    }
+    .share-bar__text { display: flex; align-items: center; gap: 10px; font-size: var(--text-sm); color: var(--color-text-secondary); }
+    .share-bar__icon { font-size: 22px; }
+    .share-buttons { display: flex; gap: var(--space-1); }
+    .share-btn {
+      width: 36px; height: 36px; border-radius: var(--radius-full);
+      border: 1.5px solid var(--color-border);
+      display: flex; align-items: center; justify-content: center;
+      background: var(--color-surface); color: var(--color-text-secondary);
+      cursor: pointer; transition: all var(--transition-fast);
+    }
+    .share-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+
+    @media (max-width: 1024px) { .wishlist-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 768px)  { .wishlist-grid { grid-template-columns: repeat(2, 1fr); } .wishlist-header { flex-direction: column; align-items: flex-start; } }
+    @media (max-width: 480px)  { .wishlist-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="navbar__inner">
+      <a href="../index.html" class="navbar__logo">حرفة</a>
+      <nav class="navbar__nav">
+        <a href="../index.html" class="navbar__link">الرئيسية</a>
+        <a href="shop.html"     class="navbar__link">المتجر</a>
+        <a href="about.html"    class="navbar__link">من نحن</a>
+        <a href="artisans.html" class="navbar__link">الحرفيات</a>
+        <a href="contact.html"  class="navbar__link">تواصل معنا</a>
+      </nav>
+      <div class="navbar__actions">
+        <a href="wishlist.html" class="navbar__icon-btn active" style="color:var(--color-primary)" aria-label="المفضلة">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </a>
+        <a href="cart.html" class="navbar__icon-btn" style="position:relative" aria-label="السلة">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="navbar__badge" style="display:none">0</span>
+        </a>
+        <a href="login.html" class="btn btn--primary btn--sm">دخول</a>
+        <button class="navbar__icon-btn navbar__mobile-toggle" style="display:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wishlist-page">
+    <div class="container">
+
+      <div class="wishlist-header">
+        <div>
+          <h1>المفضلة لديك ♡</h1>
+          <p><strong id="wishCount">٦ منتجات</strong> محفوظة في قائمة المفضلة</p>
+        </div>
+        <div class="wishlist-actions">
+          <button class="btn btn--secondary btn--sm" onclick="addAllToCart()">إضافة الكل للسلة</button>
+          <button class="btn btn--ghost btn--sm" style="border-color:var(--color-border); color:var(--color-text-secondary);" onclick="clearWishlist()">مسح القائمة</button>
+        </div>
+      </div>
+
+      <!-- Share bar -->
+      <div class="share-bar">
+        <div class="share-bar__text">
+          <span class="share-bar__icon">🎁</span>
+          شاركي قائمة مفضلاتك مع صديقاتك أو عائلتك
+        </div>
+        <div class="share-buttons">
+          <button class="share-btn" onclick="showToast('تم نسخ الرابط ✓')" aria-label="نسخ الرابط">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+          <button class="share-btn" onclick="showToast('جاري المشاركة عبر واتساب...')" aria-label="واتساب">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-wishlist" id="emptyWishlist">
+        <div class="empty-wishlist__icon">♡</div>
+        <h2 class="empty-wishlist__title">قائمة المفضلة فاضية</h2>
+        <p class="empty-wishlist__msg">احفظي المنتجات اللي بتحبيها هنا<br/>عشان ترجعي لها بسهولة بأي وقت</p>
+        <a href="shop.html" class="btn btn--primary btn--lg">تصفحي المتجر</a>
+      </div>
+
+      <!-- Grid -->
+      <div class="wishlist-grid" id="wishlistGrid">
+
+        <!-- Item 1 -->
+        <div class="wish-card" id="wish1">
+          <div class="wish-card__img">
+            <img src="/images/embroidered-abaya.jpg.jpg">
+            <button class="wish-card__remove" onclick="removeWish('wish1')" aria-label="إزالة">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+            <span class="badge badge--primary wish-card__badge">جديد</span>
+          </div>
+          <div class="wish-card__body">
+            
+            <p class="wish-card__artisan">أم سامر · نابلس</p>
+            <h3 class="wish-card__name">ثوب تطريز فلسطيني تقليدي</h3>
+            <p class="wish-card__added">أُضيف منذ ٣ أيام</p>
+            
+            <div class="wish-card__meta">
+              <span class="wish-card__price">٣٢٠ ₪</span>
+              <div class="wish-card__rating"><span class="wish-card__stars">★★★★★</span><span>(٢٤)</span></div>
+            </div>
+            <button class="wish-card__btn" onclick="cart.add({id:'p1',name:'ثوب تطريز فلسطيني',price:320})">أضف للسلة</button>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="wish-card" id="wish2">
+          <div class="wish-card__img">
+            <img src="/images/window-vase.jpeg.jpeg">
+            <button class="wish-card__remove" onclick="removeWish('wish2')" aria-label="إزالة">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+            <span class="badge badge--accent wish-card__badge">خصم ٢٠٪</span>
+          </div>
+          <div class="wish-card__body">
+            <p class="wish-card__artisan">خديجة · الخليل</p>
+            <h3 class="wish-card__name">إبريق خزف مزخرف يدوياً</h3>
+            <p class="wish-card__added">أُضيف منذ أسبوع</p>
+            <div class="wish-card__meta">
+              <div>
+                <span class="wish-card__price-old">١٥٠ ₪</span>
+                <span class="wish-card__price">١٢٠ ₪</span>
+              </div>
+              <div class="wish-card__rating"><span class="wish-card__stars">★★★★☆</span><span>(١٨)</span></div>
+            </div>
+            <button class="wish-card__btn" onclick="cart.add({id:'p2',name:'إبريق خزف',price:120})">أضف للسلة</button>
+          </div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="wish-card" id="wish3">
+          <div class="wish-card__img">
+            <img src="/images/carpet2-texture.jpg.jpg">
+            <button class="wish-card__remove" onclick="removeWish('wish3')" aria-label="إزالة">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+          </div>
+          <div class="wish-card__body">
+            <p class="wish-card__artisan">فاطمة · بيت لحم</p>
+            <h3 class="wish-card__name">سجادة نسيج يدوي بألوان تراثية</h3>
+            <p class="wish-card__added">أُضيف منذ يومين</p>
+            <div class="wish-card__meta">
+              <span class="wish-card__price">٤٥٠ ₪</span>
+              <div class="wish-card__rating"><span class="wish-card__stars">★★★★★</span><span>(٤١)</span></div>
+            </div>
+            <button class="wish-card__btn" onclick="cart.add({id:'p3',name:'سجادة نسيج',price:450})">أضف للسلة</button>
+          </div>
+        </div>
+
+        <!-- Item 4 - Out of stock -->
+        <div class="wish-card" id="wish4">
+          <div class="wish-card__img">
+            <img src="/images/jewelry-display.jpg.jpg">
+            <button class="wish-card__remove" onclick="removeWish('wish4')" aria-label="إزالة">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+            <span class="wish-card__stock">نفذت الكمية</span>
+          </div>
+          <div class="wish-card__body">
+            <p class="wish-card__artisan">مريم · القدس</p>
+            <h3 class="wish-card__name">عقد فضة مع حجر العقيق</h3>
+            <p class="wish-card__added">أُضيف منذ ٣ أسابيع</p>
+            <div class="wish-card__meta">
+              <span class="wish-card__price">٩٥ ₪</span>
+              <div class="wish-card__rating"><span class="wish-card__stars">★★★★☆</span><span>(٩)</span></div>
+            </div>
+            <button class="wish-card__btn" disabled>غير متوفر حالياً</button>
+          </div>
+        </div>
+
+        <!-- Item 5 -->
+        <div class="wish-card" id="wish5">
+          <div class="wish-card__img">
+            <img src="/images/jerusalm.jpg.jpg">
+            <button class="wish-card__remove" onclick="removeWish('wish5')" aria-label="إزالة">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+            <span class="badge badge--bg wish-card__badge">حصري</span>
+          </div>
+          <div class="wish-card__body">
+            <p class="wish-card__artisan">دانا · القدس</p>
+            <h3 class="wish-card__name">لوحة القدس - ألوان مائية</h3>
+            <p class="wish-card__added">أُضيف منذ ٥ أيام</p>
+            <div class="wish-card__meta">
+              <span class="wish-card__price">٢٨٠ ₪</span>
+              <div class="wish-card__rating"><span class="wish-card__stars">★★★★★</span><span>(١٣)</span></div>
+            </div>
+            <button class="wish-card__btn" onclick="cart.add({id:'p6',name:'لوحة القدس',price:280})">أضف للسلة</button>
+          </div>
+        </div>
+
+        <!-- Item 6 -->
+        <div class="wish-card" id="wish6">
+          <div class="wish-card__img">
+            <img src="/images/handmade-soap.jpeg.jpeg">
+            <button class="wish-card__remove" onclick="removeWish('wish6')" aria-label="إزالة">
+              <svg width="16" height="16" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+          </div>
+          <div class="wish-card__body">
+            <p class="wish-card__artisan">سمر · رام الله</p>
+            <h3 class="wish-card__name">صابون زيت الزيتون البلدي</h3>
+            <p class="wish-card__added">أُضيف اليوم</p>
+            <div class="wish-card__meta">
+              <span class="wish-card__price">٤٥ ₪</span>
+              <div class="wish-card__rating"><span class="wish-card__stars">★★★★★</span><span>(٦٧)</span></div>
+            </div>
+            <button class="wish-card__btn" onclick="cart.add({id:'p5',name:'صابون زيت زيتون',price:45})">أضف للسلة</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer" style="margin-top: var(--space-12);">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <p class="footer__logo">حرفة</p>
+          <p class="footer__desc">منصة رقمية تحتفي بالحرف اليدوية الفلسطينية</p>
+        </div>
+        <div>
+          <h4 class="footer__heading">المتجر</h4>
+          <ul class="footer__links">
+            <li><a href="shop.html" class="footer__link">جميع المنتجات</a></li>
+            <li><a href="shop.html?cat=embroidery" class="footer__link">التطريز</a></li>
+            <li><a href="shop.html?cat=pottery" class="footer__link">الخزف</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer__heading">المنصة</h4>
+          <ul class="footer__links">
+            <li><a href="about.html" class="footer__link">من نحن</a></li>
+            <li><a href="contact.html" class="footer__link">تواصل معنا</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer__heading">المساعدة</h4>
+          <ul class="footer__links">
+            <li><a href="#" class="footer__link">الأسئلة الشائعة</a></li>
+            <li><a href="#" class="footer__link">سياسة الإرجاع</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="footer__divider" />
+      <div class="footer__bottom">
+        <p>© ٢٠٢٥ حرفة. جميع الحقوق محفوظة</p>
+        <p>صُنع بـ ♡ دعماً للحرفيات الفلسطينيات</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/app.js"></script>
+  <script>
+    const toAr = n => String(n).replace(/[0-9]/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+    let wishItemsLeft = 6;
+
+    function removeWish(id) {
+      const el = document.getElementById(id);
+      el.classList.add('removing');
+      setTimeout(() => {
+        el.remove();
+        wishItemsLeft--;
+        document.getElementById('wishCount').textContent = toAr(wishItemsLeft) + ' منتجات';
+        if (wishItemsLeft <= 0) {
+          document.getElementById('wishlistGrid').style.display = 'none';
+          document.querySelector('.share-bar').style.display = 'none';
+          document.getElementById('emptyWishlist').classList.add('visible');
+        }
+      }, 300);
+    }
+
+    function addAllToCart() {
+      const buttons = document.querySelectorAll('.wish-card__btn:not(:disabled)');
+      buttons.forEach(b => b.click());
+      showToast('تمت إضافة جميع المنتجات المتوفرة للسلة ✓');
+    }
+
+    function clearWishlist() {
+      document.querySelectorAll('.wish-card').forEach(card => card.classList.add('removing'));
+      setTimeout(() => {
+        document.getElementById('wishlistGrid').style.display = 'none';
+        document.querySelector('.share-bar').style.display = 'none';
+        document.getElementById('emptyWishlist').classList.add('visible');
+      }, 300);
+    }
+
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = `position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(20px);background:#2C1A0E;color:#FAF7F2;padding:14px 28px;border-radius:9999px;font-family:'Tajawal',sans-serif;font-size:15px;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,0.2);z-index:9999;opacity:0;transition:all 0.3s ease;direction:rtl;white-space:nowrap;`;
+      document.body.appendChild(t);
+      requestAnimationFrame(() => { t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)'; });
+      setTimeout(() => { t.style.opacity='0'; setTimeout(() => t.remove(), 300); }, 2800);
+    }
+
+    const toggle = document.querySelector('.navbar__mobile-toggle');
+    if (window.innerWidth <= 768) toggle.style.display = 'flex';
+    window.addEventListener('resize', () => {
+      toggle.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+    });
+  </script>
+</body>
+</html>

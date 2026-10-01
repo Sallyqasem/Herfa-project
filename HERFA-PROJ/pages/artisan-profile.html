@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>أم سامر - حرفية تطريز فلسطيني | حرفة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+    .search-panel { position: fixed; top: 72px; left: 0; right: 0; background: var(--color-surface); border-bottom: 1px solid var(--color-border); padding: var(--space-3); z-index: var(--z-dropdown); opacity: 0; pointer-events: none; transform: translateY(-8px); transition: all var(--transition-normal); box-shadow: var(--shadow-lg); }
+    .search-panel.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+    .search-panel__inner { max-width: var(--container-max); margin-inline: auto; display: flex; gap: var(--space-2); align-items: center; }
+    .search-panel__input { flex: 1; padding: 14px var(--space-3); border: 1.5px solid var(--color-border); border-radius: var(--radius-full); font-family: var(--font-body); font-size: var(--text-lg); direction: rtl; background: var(--color-bg-alt); }
+    .search-panel__input:focus { outline: none; border-color: var(--color-primary); background: white; }
+    .search-panel__close { width: 44px; height: 44px; border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; color: var(--color-text-secondary); cursor: pointer; flex-shrink: 0; }
+    .search-panel__close:hover { background: var(--color-bg-alt); color: var(--color-primary); }
+
+    .breadcrumb { display: flex; align-items: center; gap: 8px; font-size: var(--text-sm); color: var(--color-text-muted); padding-block: var(--space-2); flex-wrap: wrap; }
+    .breadcrumb a { color: var(--color-text-secondary); }
+    .breadcrumb a:hover { color: var(--color-primary); }
+    .breadcrumb__sep { color: var(--color-border-dark); }
+    .breadcrumb__current { color: var(--color-primary); font-weight: var(--fw-medium); }
+
+    .artisan-cover { position: relative; height: 280px; border-radius: var(--radius-2xl); overflow: hidden; background: linear-gradient(135deg, #3D2B1F 0%, #5C3D2A 45%, #7A4F35 100%); margin-top: var(--space-2); }
+    .artisan-cover__bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 15% 30%, rgba(192,113,79,0.3) 0%, transparent 50%), radial-gradient(ellipse at 85% 70%, rgba(232,168,124,0.2) 0%, transparent 45%); }
+    .artisan-cover__pattern { position: absolute; inset: 0; background-image: repeating-linear-gradient(45deg, rgba(232,168,124,0.06) 0, rgba(232,168,124,0.06) 2px, transparent 2px, transparent 22px); }
+    .artisan-cover__verified-tag { position: absolute; top: var(--space-3); left: var(--space-3); display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 6px 14px; border-radius: var(--radius-full); font-size: var(--text-xs); font-weight: var(--fw-medium); }
+
+    .artisan-header { display: flex; align-items: flex-end; gap: var(--space-4); margin-top: -64px; padding-inline: var(--space-3); position: relative; z-index: 2; flex-wrap: wrap; }
+    .artisan-header__avatar { width: 128px; height: 128px; border-radius: var(--radius-full); border: 5px solid var(--color-bg); background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-size: var(--text-5xl); font-weight: var(--fw-bold); color: white; box-shadow: var(--shadow-lg); flex-shrink: 0; overflow: hidden; }
+    .artisan-header__info { flex: 1; padding-bottom: var(--space-2); min-width: 240px; }
+    .artisan-header__name-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .artisan-header__name { font-family: var(--font-display); font-size: var(--text-3xl); font-weight: var(--fw-bold); }
+    .artisan-header__verified { color: var(--color-success); display: inline-flex; align-items: center; }
+    .artisan-header__meta { display: flex; align-items: center; gap: var(--space-2); color: var(--color-text-secondary); font-size: var(--text-sm); margin-top: 4px; flex-wrap: wrap; }
+    .artisan-header__meta span { display: inline-flex; align-items: center; gap: 4px; }
+    .artisan-header__actions { display: flex; gap: var(--space-2); padding-bottom: var(--space-2); flex-shrink: 0; }
+
+    .artisan-stats-bar { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--space-2); margin-block: var(--space-5); padding: var(--space-3); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl); box-shadow: var(--shadow-sm); }
+    .artisan-stat { text-align: center; padding-inline: var(--space-1); }
+    .artisan-stat:not(:last-child) { border-inline-end: 1px solid var(--color-border); }
+    .artisan-stat__number { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: var(--fw-extrabold); color: var(--color-primary); line-height: 1; }
+    .artisan-stat__label { font-size: var(--text-sm); color: var(--color-text-muted); margin-top: 4px; }
+
+    .artisan-bio { display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-6); margin-bottom: var(--space-8); }
+    .artisan-bio__text p { color: var(--color-text-secondary); line-height: var(--lh-loose); margin-bottom: var(--space-2); font-size: var(--text-base); }
+    .artisan-bio__quote { border-right: 3px solid var(--color-primary); padding-inline-end: var(--space-2); font-family: var(--font-display); font-size: var(--text-lg); font-weight: var(--fw-medium); color: var(--color-text-primary); margin-block: var(--space-3); line-height: var(--lh-loose); }
+    .artisan-bio__sidebar { background: var(--color-surface-warm); border: 1px solid var(--color-border); border-radius: var(--radius-xl); padding: var(--space-3); display: flex; flex-direction: column; gap: var(--space-3); }
+    .sidebar-block__title { font-size: var(--text-sm); font-weight: var(--fw-semibold); color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .specialty-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .timeline-list { display: flex; flex-direction: column; gap: var(--space-2); }
+    .timeline-item { display: flex; gap: 10px; align-items: flex-start; }
+    .timeline-item__dot { width: 10px; height: 10px; border-radius: 50%; background: var(--color-primary); margin-top: 5px; flex-shrink: 0; }
+    .timeline-item__year { font-weight: var(--fw-bold); font-size: var(--text-sm); color: var(--color-text-primary); }
+    .timeline-item__desc { font-size: var(--text-sm); color: var(--color-text-secondary); }
+    .contact-block { display: flex; flex-direction: column; gap: 10px; }
+    .contact-block a { display: flex; align-items: center; gap: 10px; font-size: var(--text-sm); color: var(--color-text-secondary); }
+    .contact-block a:hover { color: var(--color-primary); }
+    .contact-block svg { color: var(--color-primary); flex-shrink: 0; }
+
+    .workshop-gallery { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); }
+    .workshop-gallery__item { aspect-ratio: 1/1; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--color-bg-alt), #E8D5C0); display: flex; align-items: center; justify-content: center; font-size: 36px; border: 1px solid var(--color-border); overflow: hidden; transition: transform var(--transition-fast); }
+    .workshop-gallery__item:hover { transform: scale(1.03); }
+
+    .filter-bar { display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-4); flex-wrap: wrap; }
+    .filter-chip { padding: 8px 18px; border-radius: var(--radius-full); border: 1.5px solid var(--color-border); background: var(--color-surface); font-size: var(--text-sm); font-weight: var(--fw-medium); color: var(--color-text-secondary); cursor: pointer; transition: all var(--transition-fast); }
+    .filter-chip:hover { border-color: var(--color-primary-light); }
+    .filter-chip.active { background: var(--color-primary); border-color: var(--color-primary); color: white; }
+    .sort-select-wrap { margin-inline-start: auto; }
+    .sort-select-wrap select { padding: 8px 14px; border: 1.5px solid var(--color-border); border-radius: var(--radius-full); font-size: var(--text-sm); background: var(--color-surface); color: var(--color-text-secondary); cursor: pointer; }
+
+    .reviews-summary { display: grid; grid-template-columns: 220px 1fr; gap: var(--space-6); padding: var(--space-4); background: var(--color-surface-warm); border: 1px solid var(--color-border); border-radius: var(--radius-lg); margin-bottom: var(--space-4); }
+    .reviews-summary__score { text-align: center; border-inline-end: 1px solid var(--color-border); padding-inline-end: var(--space-4); }
+    .reviews-summary__number { font-family: var(--font-display); font-size: var(--text-5xl); font-weight: var(--fw-extrabold); color: var(--color-primary); line-height: 1; }
+    .reviews-summary__stars { justify-content: center; margin-block: var(--space-1); font-size: var(--text-lg); }
+    .reviews-summary__total { font-size: var(--text-sm); color: var(--color-text-muted); }
+    .rating-bar-row { display: grid; grid-template-columns: 60px 1fr 40px; align-items: center; gap: var(--space-2); font-size: var(--text-sm); color: var(--color-text-secondary); margin-bottom: 6px; }
+    .rating-bar-track { height: 8px; background: var(--color-border); border-radius: var(--radius-full); overflow: hidden; }
+    .rating-bar-fill { height: 100%; background: #F5A623; border-radius: var(--radius-full); }
+
+    .review-card { padding: var(--space-3) 0; border-bottom: 1px solid var(--color-border); }
+    .review-card:last-child { border-bottom: none; }
+    .review-card__header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-1); flex-wrap: wrap; gap: var(--space-1); }
+    .review-card__user { display: flex; align-items: center; gap: 10px; }
+    .review-card__avatar { width: 40px; height: 40px; border-radius: var(--radius-full); background: linear-gradient(135deg, var(--color-primary), var(--color-accent)); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: var(--fw-bold); color: white; }
+    .review-card__name { font-weight: var(--fw-semibold); font-size: var(--text-base); }
+    .review-card__product-tag { font-size: var(--text-xs); color: var(--color-primary); font-weight: var(--fw-medium); }
+    .review-card__date { font-size: var(--text-xs); color: var(--color-text-muted); }
+    .review-card__text { color: var(--color-text-secondary); line-height: var(--lh-loose); margin-block: var(--space-1); }
+
+    .contact-cta { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%); padding: var(--space-6); border-radius: var(--radius-2xl); text-align: center; color: white; }
+    .contact-cta h3 { color: white; margin-bottom: var(--space-1); }
+    .contact-cta p { color: rgba(255,255,255,0.85); max-width: 480px; margin-inline: auto; margin-bottom: var(--space-3); line-height: var(--lh-loose); }
+    .contact-cta .btn--primary { background: white; color: var(--color-primary); border-color: white; }
+    .contact-cta .btn--primary:hover { background: var(--color-bg); }
+    .contact-cta .btn--secondary { color: white; border-color: rgba(255,255,255,0.6); }
+    .contact-cta .btn--secondary:hover { background: rgba(255,255,255,0.15); color: white; }
+    .contact-cta__actions { display: flex; justify-content: center; gap: var(--space-2); flex-wrap: wrap; }
+
+    @media (max-width: 1024px) {
+      .artisan-bio { grid-template-columns: 1fr; }
+      .workshop-gallery { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .artisan-cover { height: 200px; }
+      .artisan-header { margin-top: -48px; }
+      .artisan-header__avatar { width: 96px; height: 96px; font-size: var(--text-3xl); border-width: 4px; }
+      .artisan-header__actions { width: 100%; }
+      .artisan-header__actions .btn { flex: 1; }
+      .artisan-stats-bar { grid-template-columns: repeat(3, 1fr); row-gap: var(--space-3); }
+      .artisan-stat:nth-child(3) { border-inline-end: none; }
+      .workshop-gallery { grid-template-columns: repeat(2, 1fr); }
+      .products-grid { grid-template-columns: repeat(2, 1fr); }
+      .reviews-summary { grid-template-columns: 1fr; }
+      .reviews-summary__score { border-inline-end: none; border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-3); padding-inline-end: 0; }
+      .sort-select-wrap { margin-inline-start: 0; width: 100%; }
+      .sort-select-wrap select { width: 100%; }
+    }
+    @media (max-width: 480px) {
+      .artisan-stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .artisan-stat:nth-child(2n) { border-inline-end: none; }
+      .products-grid { grid-template-columns: 1fr; }
+      .workshop-gallery { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <div class="navbar__inner">
+      <a href="../index.html" class="navbar__logo">حرفة</a>
+      <nav class="navbar__nav">
+        <a href="../index.html" class="navbar__link">الرئيسية</a>
+        <a href="shop.html" class="navbar__link">المتجر</a>
+        <a href="about.html" class="navbar__link">من نحن</a>
+        <a href="artisans.html" class="navbar__link active">الحرفيات</a>
+        <a href="contact.html" class="navbar__link">تواصل معنا</a>
+      </nav>
+      <div class="navbar__actions">
+        <button class="navbar__icon-btn" data-search-toggle aria-label="بحث">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <a href="wishlist.html" class="navbar__icon-btn" aria-label="المفضلة">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </a>
+        <a href="cart.html" class="navbar__icon-btn" style="position:relative" aria-label="السلة">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="navbar__badge" style="display:none">0</span>
+        </a>
+        <a href="login.html" class="btn btn--primary btn--sm">دخول</a>
+        <button class="navbar__icon-btn navbar__mobile-toggle" style="display:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="search-panel" data-search-panel>
+    <div class="search-panel__inner">
+      <input type="search" placeholder="ابحثي عن منتج، حرفية، أو فئة..." class="search-panel__input" data-search-input />
+      <button class="search-panel__close" data-search-close aria-label="إغلاق">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <main>
+    <div class="container">
+
+      <nav class="breadcrumb">
+        <a href="../index.html">الرئيسية</a>
+        <span class="breadcrumb__sep">/</span>
+        <a href="artisans.html">الحرفيات</a>
+        <span class="breadcrumb__sep">/</span>
+        <span class="breadcrumb__current">أم سامر</span>
+      </nav>
+
+      <div class="artisan-cover">
+        <div class="artisan-cover__bg"></div>
+        <div class="artisan-cover__pattern"></div>
+        <span class="artisan-cover__verified-tag">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          حرفية موثقة
+        </span>
+      </div>
+
+      <div class="artisan-header">
+        <div class="artisan-header__avatar">أ</div>
+        <div class="artisan-header__info">
+          <div class="artisan-header__name-row">
+            <h1 class="artisan-header__name">أم سامر</h1>
+            <span class="artisan-header__verified">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </span>
+          </div>
+          <div class="artisan-header__meta">
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> نابلس، فلسطين</span>
+            <span>•</span>
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> حرفية منذ ٢٠١٢</span>
+            <span>•</span>
+            <span>تطريز تقليدي</span>
+          </div>
+        </div>
+        <div class="artisan-header__actions">
+          <button class="btn btn--secondary" id="followBtn" onclick="toggleFollow(this)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            متابعة
+          </button>
+          <a href="#contact" class="btn btn--primary">تواصلي معها</a>
+        </div>
+      </div>
+
+      <div class="artisan-stats-bar">
+        <div class="artisan-stat"><div class="artisan-stat__number">٤٧</div><div class="artisan-stat__label">منتج</div></div>
+        <div class="artisan-stat"><div class="artisan-stat__number">٤.٩</div><div class="artisan-stat__label">تقييم</div></div>
+        <div class="artisan-stat"><div class="artisan-stat__number">٣٢٠+</div><div class="artisan-stat__label">طلب مكتمل</div></div>
+        <div class="artisan-stat"><div class="artisan-stat__number">١٤</div><div class="artisan-stat__label">سنة خبرة</div></div>
+        <div class="artisan-stat"><div class="artisan-stat__number">٨٩٠</div><div class="artisan-stat__label">متابع</div></div>
+      </div>
+
+      <section class="artisan-bio">
+        <div class="artisan-bio__text">
+          <h3 style="margin-bottom: var(--space-2);">قصتها</h3>
+          <p>بدأت أم سامر التطريز منذ كانت في الثالثة عشرة من عمرها، تتعلم الغرز التقليدية على يد جدتها في أحد أحياء نابلس القديمة. بعد سنوات من الممارسة والصبر، أصبحت اليوم من أبرز حرفيات التطريز الفلسطيني التقليدي في المنطقة.</p>
+          <p>تتخصص أم سامر في نقشات "الخليل" و"رام الله" التراثية، وتستخدم خيوط الحرير الطبيعي حصراً للحفاظ على جودة وأصالة كل قطعة. كل ثوب تصممه يحمل قصة، ويستغرق إنتاجه من ٣٠ إلى ٦٠ يوم عمل حسب التفاصيل.</p>
+          <div class="artisan-bio__quote">"كل غرزة بطرزها بإيدي بتحكي حكاية... التطريز مش مجرد شغل، هو ذاكرة بنتوارثها"</div>
+          <p>انضمت أم سامر إلى منصة حرفة منذ انطلاقها بهدف الوصول إلى عملاء جدد حول العالم مع الحفاظ على الطابع الأصيل لحرفتها، واليوم تدرّب أربع نساء من حيها على نفس الحرفة.</p>
+
+          <h3 style="margin-block: var(--space-4) var(--space-2);">صور من ورشتها</h3>
+          <div class="workshop-gallery">
+            <div class="workshop-gallery__item">🪡</div>
+            <div class="workshop-gallery__item">🧵</div>
+            <div class="workshop-gallery__item">🎨</div>
+            <div class="workshop-gallery__item">👗</div>
+          </div>
+        </div>
+
+        <div class="artisan-bio__sidebar">
+          <div>
+            <p class="sidebar-block__title">التخصصات</p>
+            <div class="specialty-tags">
+              <span class="badge badge--primary">تطريز تقليدي</span>
+              <span class="badge badge--bg">نقشة الخليل</span>
+              <span class="badge badge--bg">نقشة رام الله</span>
+              <span class="badge badge--bg">حرير طبيعي</span>
+            </div>
+          </div>
+          <div class="divider" style="margin-block: 4px;"></div>
+          <div>
+            <p class="sidebar-block__title">محطات مهمة</p>
+            <div class="timeline-list">
+              <div class="timeline-item"><span class="timeline-item__dot"></span><div><p class="timeline-item__year">٢٠١٢</p><p class="timeline-item__desc">بدأت مشروعها الحرفي الخاص</p></div></div>
+              <div class="timeline-item"><span class="timeline-item__dot"></span><div><p class="timeline-item__year">٢٠١٨</p><p class="timeline-item__desc">شاركت في معرض التراث الفلسطيني بعمّان</p></div></div>
+              <div class="timeline-item"><span class="timeline-item__dot"></span><div><p class="timeline-item__year">٢٠٢٤</p><p class="timeline-item__desc">انضمت إلى منصة حرفة</p></div></div>
+            </div>
+          </div>
+          <div class="divider" style="margin-block: 4px;"></div>
+          <div class="contact-block">
+            <p class="sidebar-block__title">معلومات التواصل</p>
+            <a href="tel:+970599000000">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+              0599-000-000
+            </a>
+            <a href="#">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+              @om_samer_embroidery
+            </a>
+            <span style="display:flex; align-items:center; gap:10px; font-size: var(--text-sm); color: var(--color-text-secondary);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              تردّ عادة خلال ساعتين
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--sm">
+        <div class="section__header">
+          <span class="section__eyebrow">منتجات أم سامر</span>
+          <h2 class="section__title">٤٧ قطعة من إبداعها</h2>
+        </div>
+        <div class="filter-bar">
+          <button class="filter-chip active">الكل (٤٧)</button>
+          <button class="filter-chip">أثواب (٢٢)</button>
+          <button class="filter-chip">حقائب (١١)</button>
+          <button class="filter-chip">إكسسوارات (٩)</button>
+          <button class="filter-chip">أطفال (٥)</button>
+          <div class="sort-select-wrap">
+            <select aria-label="ترتيب حسب">
+              <option>الأحدث</option><option>الأكثر طلباً</option><option>السعر: من الأقل للأعلى</option><option>السعر: من الأعلى للأقل</option><option>الأعلى تقييماً</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="products-grid">
+          <article class="product-card">
+            <div class="product-card__image-wrap">
+              <div class="product-card__image-placeholder">🧵</div>
+              <button class="product-card__wishlist" onclick="wishlist.toggle('p1'); this.classList.toggle('active')" aria-label="مفضلة">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </button>
+              <span class="badge badge--primary product-card__badge">جديد</span>
+            </div>
+            <div class="product-card__body">
+              <p class="product-card__artisan">أم سامر - نابلس</p>
+              <h3 class="product-card__name">ثوب تطريز فلسطيني تقليدي بنقشة الخليل</h3>
+              <div class="product-card__rating"><div class="stars">★★★★★</div><span class="product-card__reviews">(٢٤)</span></div>
+              <div class="product-card__footer">
+                <span class="product-card__price">٣٢٠ ₪</span>
+                <a href="product.html?id=1" class="btn btn--primary btn--sm">عرض المنتج</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card">
+            <div class="product-card__image-wrap">
+              <div class="product-card__image-placeholder">👜</div>
+              <button class="product-card__wishlist" onclick="wishlist.toggle('p6'); this.classList.toggle('active')" aria-label="مفضلة">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </button>
+              <span class="badge badge--accent product-card__badge">الأكثر طلباً</span>
+            </div>
+            <div class="product-card__body">
+              <p class="product-card__artisan">أم سامر - نابلس</p>
+              <h3 class="product-card__name">حقيبة يد مطرزة بألوان تراثية</h3>
+              <div class="product-card__rating"><div class="stars">★★★★★</div><span class="product-card__reviews">(٣٢)</span></div>
+              <div class="product-card__footer">
+                <span class="product-card__price">١٨٠ ₪</span>
+                <button class="btn btn--primary btn--sm" onclick="cart.add({id:'p6', name:'حقيبة يد مطرزة', price:180})">أضف للسلة</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card">
+            <div class="product-card__image-wrap">
+              <div class="product-card__image-placeholder">🧶</div>
+              <button class="product-card__wishlist" onclick="wishlist.toggle('p5'); this.classList.toggle('active')" aria-label="مفضلة">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </button>
+            </div>
+            <div class="product-card__body">
+              <p class="product-card__artisan">أم سامر - نابلس</p>
+              <h3 class="product-card__name">وسادة مطرزة بنقشة بيت لحم</h3>
+              <div class="product-card__rating"><div class="stars">★★★★★</div><span class="product-card__reviews">(١٦)</span></div>
+              <div class="product-card__footer">
+                <span class="product-card__price">١١٠ ₪</span>
+                <button class="btn btn--primary btn--sm" onclick="cart.add({id:'p5', name:'وسادة مطرزة', price:110})">أضف للسلة</button>
+              </div>
+            </div>
+          </article>
+
+          <article class="product-card">
+            <div class="product-card__image-wrap">
+              <div class="product-card__image-placeholder">👗</div>
+              <button class="product-card__wishlist" onclick="wishlist.toggle('p9'); this.classList.toggle('active')" aria-label="مفضلة">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </button>
+            </div>
+            <div class="product-card__body">
+              <p class="product-card__artisan">أم سامر - نابلس</p>
+              <h3 class="product-card__name">ثوب أطفال مطرز بنقشة مصغّرة</h3>
+              <div class="product-card__rating"><div class="stars">★★★★☆</div><span class="product-card__reviews">(٧)</span></div>
+              <div class="product-card__footer">
+                <span class="product-card__price">١٤٠ ₪</span>
+                <button class="btn btn--primary btn--sm" onclick="cart.add({id:'p9', name:'ثوب أطفال مطرز', price:140})">أضف للسلة</button>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div class="section__cta"><button class="btn btn--secondary btn--lg">عرض كل المنتجات (٤٧)</button></div>
+      </section>
+
+      <section class="section section--sm" id="artisan-reviews">
+        <div class="section__header">
+          <span class="section__eyebrow">آراء العملاء</span>
+          <h2 class="section__title">تقييمات أم سامر</h2>
+        </div>
+        <div class="reviews-summary">
+          <div class="reviews-summary__score">
+            <div class="reviews-summary__number">٤.٩</div>
+            <div class="stars reviews-summary__stars">★★★★★</div>
+            <div class="reviews-summary__total">من ٦٨ تقييم</div>
+          </div>
+          <div class="reviews-summary__breakdown">
+            <div class="rating-bar-row"><span>٥ نجوم</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:90%"></div></div><span>٦١</span></div>
+            <div class="rating-bar-row"><span>٤ نجوم</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:8%"></div></div><span>٥</span></div>
+            <div class="rating-bar-row"><span>٣ نجوم</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:2%"></div></div><span>٢</span></div>
+            <div class="rating-bar-row"><span>٢ نجوم</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:0%"></div></div><span>٠</span></div>
+            <div class="rating-bar-row"><span>١ نجمة</span><div class="rating-bar-track"><div class="rating-bar-fill" style="width:0%"></div></div><span>٠</span></div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div class="review-card__header">
+            <div class="review-card__user">
+              <div class="review-card__avatar">س</div>
+              <div><p class="review-card__name">سارة أبو علي</p><p class="review-card__product-tag">ثوب تطريز فلسطيني تقليدي</p></div>
+            </div>
+            <p class="review-card__date">منذ ١٢ يوم</p>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p class="review-card__text">تعاملت مع أم سامر مباشرة وكانت متعاونة جداً، عدّلت لي بعض التفاصيل بكل سرور. شغلها رهيب</p>
+        </div>
+
+        <div class="review-card">
+          <div class="review-card__header">
+            <div class="review-card__user">
+              <div class="review-card__avatar">ر</div>
+              <div><p class="review-card__name">ريم محمود</p><p class="review-card__product-tag">حقيبة يد مطرزة</p></div>
+            </div>
+            <p class="review-card__date">منذ ٣ أسابيع</p>
+          </div>
+          <div class="stars">★★★★★</div>
+          <p class="review-card__text">دقة عالية في التفاصيل وسرعة بالرد. أنصح بالتعامل معها بشدة</p>
+        </div>
+
+        <div class="section__cta"><button class="btn btn--secondary">عرض كل التقييمات (٦٨)</button></div>
+      </section>
+
+      <section class="section" id="contact">
+        <div class="contact-cta">
+          <h3>عندك استفسار أو طلب خاص؟</h3>
+          <p>أم سامر بترحب بطلباتك الخاصة وأسئلتك عن أي قطعة. عادة بترد خلال ساعتين</p>
+          <div class="contact-cta__actions">
+            <a href="https://wa.me/970599000000" class="btn btn--primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              تواصل عبر واتساب
+            </a>
+            <a href="contact.html" class="btn btn--secondary">إرسال رسالة</a>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <p class="footer__logo">حرفة</p>
+          <p class="footer__desc">منصة رقمية تحتفي بالحرف اليدوية الفلسطينية وتمكّن الحرفيات من الوصول إلى أسواق أوسع مع الحفاظ على أصالة تراثنا</p>
+        </div>
+        <div>
+          <h4 class="footer__heading">المتجر</h4>
+          <ul class="footer__links">
+            <li><a href="shop.html" class="footer__link">جميع المنتجات</a></li>
+            <li><a href="shop.html?cat=embroidery" class="footer__link">التطريز</a></li>
+            <li><a href="shop.html?cat=pottery" class="footer__link">الخزف</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer__heading">المنصة</h4>
+          <ul class="footer__links">
+            <li><a href="about.html" class="footer__link">من نحن</a></li>
+            <li><a href="artisans.html" class="footer__link">الحرفيات</a></li>
+            <li><a href="register-artisan.html" class="footer__link">انضمي كحرفية</a></li>
+            <li><a href="contact.html" class="footer__link">تواصل معنا</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer__heading">المساعدة</h4>
+          <ul class="footer__links">
+            <li><a href="#" class="footer__link">الأسئلة الشائعة</a></li>
+            <li><a href="#" class="footer__link">سياسة الإرجاع</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="footer__divider" />
+      <div class="footer__bottom">
+        <p>© ٢٠٢٥ حرفة. جميع الحقوق محفوظة</p>
+        <p>صُنع بـ ♡ دعماً للحرفيات الفلسطينيات</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/app.js"></script>
+  <script>
+    function toggleFollow(btn) {
+      const isFollowing = btn.classList.toggle('following');
+      if (isFollowing) {
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> متابَعة`;
+        btn.classList.remove('btn--secondary'); btn.classList.add('btn--primary');
+        showToast('بدأتِ متابعة أم سامر ✓');
+      } else {
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> متابعة`;
+        btn.classList.remove('btn--primary'); btn.classList.add('btn--secondary');
+        showToast('تم إلغاء المتابعة');
+      }
+    }
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+      });
+    });
+    const toggle = document.querySelector('.navbar__mobile-toggle');
+    if (window.innerWidth <= 768) toggle.style.display = 'flex';
+    window.addEventListener('resize', () => {
+      toggle.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+    });
+  </script>
+</body>
+</html>

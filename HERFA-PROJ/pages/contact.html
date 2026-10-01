@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تواصل معنا - حرفة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <style>
+
+    .contact-hero {
+      background: linear-gradient(135deg, #3D2B1F 0%, #5C3D2A 50%, #7A4F35 100%);
+      padding: var(--space-12) 0;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .contact-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(192,113,79,0.2) 0%, transparent 65%);
+    }
+    .contact-hero__eyebrow {
+      display: inline-block;
+      font-size: var(--text-sm); font-weight: var(--fw-medium);
+      letter-spacing: 3px; text-transform: uppercase;
+      color: var(--color-accent); margin-bottom: var(--space-2);
+      position: relative; z-index: 1;
+    }
+    .contact-hero__title {
+      font-family: var(--font-display);
+      font-size: var(--text-4xl); font-weight: var(--fw-extrabold);
+      color: white; margin-bottom: var(--space-2);
+      position: relative; z-index: 1;
+    }
+    .contact-hero__subtitle {
+      font-size: var(--text-lg); color: rgba(250,247,242,0.8);
+      position: relative; z-index: 1;
+    }
+
+    /* Layout */
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: var(--space-8);
+      padding-block: var(--space-10);
+      align-items: start;
+    }
+
+    /* Info side */
+    .contact-info__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl); font-weight: var(--fw-bold);
+      margin-bottom: var(--space-2);
+    }
+    .contact-info__subtitle {
+      color: var(--color-text-secondary);
+      line-height: var(--lh-loose);
+      margin-bottom: var(--space-5);
+    }
+
+    .contact-cards {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      margin-bottom: var(--space-5);
+    }
+    .contact-card {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-3);
+      transition: all var(--transition-normal);
+      text-decoration: none;
+    }
+    .contact-card:hover {
+      border-color: var(--color-primary);
+      box-shadow: var(--shadow-md);
+      transform: translateX(-4px);
+    }
+    .contact-card__icon {
+      width: 52px; height: 52px;
+      border-radius: var(--radius-lg);
+      background: rgba(192,113,79,0.1);
+      color: var(--color-primary);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .contact-card__label {
+      font-size: var(--text-xs); font-weight: var(--fw-medium);
+      color: var(--color-text-muted); margin-bottom: 4px;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .contact-card__value {
+      font-family: var(--font-display);
+      font-size: var(--text-base); font-weight: var(--fw-semibold);
+      color: var(--color-text-primary); margin-bottom: 2px;
+    }
+    .contact-card__note {
+      font-size: var(--text-xs); color: var(--color-text-muted);
+    }
+
+    /* Social */
+    .contact-social__title {
+      font-size: var(--text-sm); font-weight: var(--fw-medium);
+      color: var(--color-text-secondary); margin-bottom: var(--space-2);
+    }
+    .contact-social__links {
+      display: flex; gap: var(--space-2);
+    }
+    .contact-social__link {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-full);
+      border: 1.5px solid var(--color-border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--color-text-secondary);
+      transition: all var(--transition-fast);
+      text-decoration: none;
+    }
+    .contact-social__link:hover {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      background: rgba(192,113,79,0.06);
+    }
+
+    /* Working hours */
+    .working-hours {
+      background: var(--color-bg-alt);
+      border-radius: var(--radius-xl);
+      padding: var(--space-3);
+      margin-top: var(--space-4);
+    }
+    .working-hours__title {
+      font-family: var(--font-display);
+      font-size: var(--text-base); font-weight: var(--fw-semibold);
+      margin-bottom: var(--space-2);
+    }
+    .hours-row {
+      display: flex; justify-content: space-between;
+      font-size: var(--text-sm);
+      padding-block: 6px;
+      border-bottom: 1px solid var(--color-border);
+    }
+    .hours-row:last-child { border-bottom: none; }
+    .hours-row__day { color: var(--color-text-secondary); }
+    .hours-row__time { font-weight: var(--fw-medium); }
+    .hours-row__time.closed { color: var(--color-error); }
+
+    /* Form side */
+    .contact-form-wrap {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-6);
+      box-shadow: var(--shadow-md);
+    }
+    .contact-form__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl); font-weight: var(--fw-bold);
+      margin-bottom: 6px;
+    }
+    .contact-form__subtitle {
+      color: var(--color-text-secondary);
+      font-size: var(--text-sm);
+      margin-bottom: var(--space-5);
+    }
+
+    /* Subject tabs */
+    .subject-tabs {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: var(--space-4);
+    }
+    .subject-tab {
+      padding: 8px 16px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-full);
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      background: none;
+      transition: all var(--transition-fast);
+    }
+    .subject-tab:hover { border-color: var(--color-primary); color: var(--color-primary); }
+    .subject-tab.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: white;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+    }
+    .form-col-full { grid-column: 1 / -1; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label { font-size: var(--text-sm); font-weight: var(--fw-medium); color: var(--color-text-secondary); }
+    .form-input, .form-select, .form-textarea {
+      padding: 12px 16px;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-family: var(--font-body); font-size: var(--text-base);
+      color: var(--color-text-primary);
+      background: var(--color-surface);
+      direction: rtl;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(192,113,79,0.12);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--color-text-muted); }
+    .form-textarea { resize: vertical; min-height: 120px; }
+
+    /* File upload */
+    .file-upload {
+      border: 2px dashed var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      text-align: center;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    .file-upload:hover { border-color: var(--color-primary); background: rgba(192,113,79,0.03); }
+    .file-upload__icon { font-size: 32px; margin-bottom: 8px; }
+    .file-upload__text { font-size: var(--text-sm); color: var(--color-text-secondary); }
+    .file-upload__text span { color: var(--color-primary); font-weight: var(--fw-medium); }
+    .file-upload input { display: none; }
+
+    /* Rating stars */
+    .star-rating { display: flex; gap: 6px; margin-top: 4px; }
+    .star-btn {
+      font-size: 28px; cursor: pointer; background: none; border: none;
+      color: var(--color-border); transition: color var(--transition-fast);
+      padding: 0;
+    }
+    .star-btn.active, .star-btn:hover { color: #F5A623; }
+
+    /* Submit */
+    .contact-submit {
+      width: 100%;
+      padding: 16px;
+      background: var(--color-primary); color: white;
+      border: none; border-radius: var(--radius-full);
+      font-family: var(--font-body);
+      font-size: var(--text-lg); font-weight: var(--fw-semibold);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .contact-submit:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(192,113,79,0.35);
+    }
+
+    /* Success */
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: var(--space-8) 0;
+    }
+    .form-success.visible { display: block; }
+    .form-success__icon { font-size: 64px; margin-bottom: var(--space-3); }
+    .form-success__title { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: var(--fw-bold); margin-bottom: var(--space-2); }
+    .form-success__msg { color: var(--color-text-secondary); line-height: var(--lh-loose); margin-bottom: var(--space-4); }
+
+    /* FAQ */
+    .faq-section {
+      padding: var(--space-12) 0;
+      background: var(--color-bg-alt);
+    }
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+      max-width: 900px;
+      margin-inline: auto;
+    }
+    .faq-item {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+    }
+    .faq-question {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-4);
+      cursor: pointer;
+      font-weight: var(--fw-semibold);
+      font-size: var(--text-base);
+      transition: background var(--transition-fast);
+      border: none; background: none;
+      width: 100%; text-align: right;
+      font-family: var(--font-body);
+      color: var(--color-text-primary);
+    }
+    .faq-question:hover { background: var(--color-bg-alt); }
+    .faq-question svg { flex-shrink: 0; transition: transform var(--transition-fast); color: var(--color-primary); }
+    .faq-item.open .faq-question svg { transform: rotate(180deg); }
+    .faq-answer {
+      max-height: 0; overflow: hidden;
+      transition: max-height var(--transition-normal), padding var(--transition-normal);
+      font-size: var(--text-sm); color: var(--color-text-secondary);
+      line-height: var(--lh-loose);
+    }
+    .faq-item.open .faq-answer {
+      max-height: 200px;
+      padding: 0 var(--space-4) var(--space-3);
+    }
+
+    @media (max-width: 1024px) {
+      .contact-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .contact-hero__title { font-size: var(--text-3xl); }
+      .form-grid-2 { grid-template-columns: 1fr; }
+      .faq-grid { grid-template-columns: 1fr; }
+      .contact-form-wrap { padding: var(--space-4); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="navbar__inner">
+      <a href="../index.html" class="navbar__logo">حرفة</a>
+      <nav class="navbar__nav">
+        <a href="../index.html" class="navbar__link">الرئيسية</a>
+        <a href="shop.html"     class="navbar__link">المتجر</a>
+        <a href="about.html"    class="navbar__link">من نحن</a>
+        <a href="artisans.html" class="navbar__link">الحرفيات</a>
+        <a href="contact.html"  class="navbar__link active">تواصل معنا</a>
+      </nav>
+      <div class="navbar__actions">
+        <a href="cart.html" class="navbar__icon-btn" style="position:relative">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="navbar__badge" style="display:none">0</span>
+        </a>
+        <a href="login.html" class="btn btn--primary btn--sm">دخول</a>
+        <button class="navbar__icon-btn navbar__mobile-toggle" style="display:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="contact-hero">
+      <div class="container">
+        <span class="contact-hero__eyebrow">تواصل معنا</span>
+        <h1 class="contact-hero__title">كيف نقدر نساعدك؟</h1>
+        <p class="contact-hero__subtitle">فريقنا جاهز للرد عليك خلال ٢٤ ساعة</p>
+      </div>
+    </section>
+
+    <!-- CONTACT LAYOUT -->
+    <div class="container">
+      <div class="contact-layout">
+
+        <!-- INFO -->
+        <div data-animate>
+          <h2 class="contact-info__title">تحدثي معنا مباشرة</h2>
+          <p class="contact-info__subtitle">سواء كان عندك سؤال عن طلبك، بدك تنضمي كحرفية، أو تبدي اقتراحاً — نحن هنا لك دائماً.</p>
+
+          <div class="contact-cards">
+            <a href="tel:+970591234567" class="contact-card">
+              <div class="contact-card__icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.41 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6.13 6.13l1.32-1.32a2 2 0 0 1 2.11-.45c.91.32 1.85.55 2.81.68A2 2 0 0 1 22 16.92z"/></svg>
+              </div>
+              <div>
+                <p class="contact-card__label">اتصلي بنا</p>
+                <p class="contact-card__value">+970 59 123 4567</p>
+                <p class="contact-card__note">الأحد - الخميس، ٩ ص - ٦ م</p>
+              </div>
+            </a>
+
+            <a href="https://wa.me/970591234567" class="contact-card">
+              <div class="contact-card__icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              </div>
+              <div>
+                <p class="contact-card__label">واتساب</p>
+                <p class="contact-card__value">تواصلي فوراً عبر واتساب</p>
+                <p class="contact-card__note">رد سريع خلال دقائق</p>
+              </div>
+            </a>
+
+            <a href="mailto:hello@herfa.ps" class="contact-card">
+              <div class="contact-card__icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <p class="contact-card__label">البريد الإلكتروني</p>
+                <p class="contact-card__value">hello@herfa.ps</p>
+                <p class="contact-card__note">رد خلال ٢٤ ساعة</p>
+              </div>
+            </a>
+
+            <div class="contact-card" style="cursor:default;">
+              <div class="contact-card__icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              </div>
+              <div>
+                <p class="contact-card__label">العنوان</p>
+                <p class="contact-card__value">نابلس، فلسطين</p>
+                <p class="contact-card__note">شارع فيصل، مبنى الإبداع</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social -->
+          <div>
+            <p class="contact-social__title">تابعينا على السوشيال ميديا</p>
+            <div class="contact-social__links">
+              <a href="#" class="contact-social__link" aria-label="إنستغرام">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+              </a>
+              <a href="#" class="contact-social__link" aria-label="فيسبوك">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+              </a>
+              <a href="#" class="contact-social__link" aria-label="تيك توك">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg>
+              </a>
+              <a href="#" class="contact-social__link" aria-label="يوتيوب">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>
+              </a>
+            </div>
+          </div>
+
+          <!-- Working hours -->
+          <div class="working-hours">
+            <h3 class="working-hours__title">⏰ ساعات العمل</h3>
+            <div class="hours-row">
+              <span class="hours-row__day">الأحد - الخميس</span>
+              <span class="hours-row__time">٩:٠٠ ص — ٦:٠٠ م</span>
+            </div>
+            <div class="hours-row">
+              <span class="hours-row__day">الجمعة</span>
+              <span class="hours-row__time">١٠:٠٠ ص — ٢:٠٠ م</span>
+            </div>
+            <div class="hours-row">
+              <span class="hours-row__day">السبت</span>
+              <span class="hours-row__time closed">مغلق</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- FORM -->
+        <div class="contact-form-wrap" data-animate data-delay="200">
+          <div id="contactFormContent">
+            <h2 class="contact-form__title">أرسلي رسالتك 💌</h2>
+            <p class="contact-form__subtitle">اختاري موضوع رسالتك وسنحرص على توجيهها للشخص المناسب</p>
+
+            <!-- Subject -->
+            <div class="subject-tabs">
+              <button class="subject-tab active" onclick="selectSubject(this)">استفسار عام</button>
+              <button class="subject-tab" onclick="selectSubject(this)">طلب / شحن</button>
+              <button class="subject-tab" onclick="selectSubject(this)">انضمام كحرفية</button>
+              <button class="subject-tab" onclick="selectSubject(this)">شكوى</button>
+              <button class="subject-tab" onclick="selectSubject(this)">اقتراح</button>
+            </div>
+
+            <div class="form-grid-2" style="gap:var(--space-3); margin-bottom:var(--space-3);">
+              <div class="form-group">
+                <label class="form-label">الاسم الكامل</label>
+                <input type="text" class="form-input" placeholder="سارة محمود" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">رقم الجوال</label>
+                <input type="tel" class="form-input" placeholder="059XXXXXXX" />
+              </div>
+              <div class="form-group form-col-full">
+                <label class="form-label">البريد الإلكتروني</label>
+                <input type="email" class="form-input" placeholder="example@email.com" />
+              </div>
+              <div class="form-group form-col-full">
+                <label class="form-label">رقم الطلب (إن وجد)</label>
+                <input type="text" class="form-input" placeholder="#HRF-2025-XXXX" />
+              </div>
+              <div class="form-group form-col-full">
+                <label class="form-label">رسالتك</label>
+                <textarea class="form-textarea" placeholder="اكتبي رسالتك هنا بالتفصيل..."></textarea>
+              </div>
+
+              <!-- Rating -->
+              <div class="form-group form-col-full">
+                <label class="form-label">تقييم تجربتك مع حرفة (اختياري)</label>
+                <div class="star-rating" id="starRating">
+                  <button class="star-btn" onclick="rateUs(1)">★</button>
+                  <button class="star-btn" onclick="rateUs(2)">★</button>
+                  <button class="star-btn" onclick="rateUs(3)">★</button>
+                  <button class="star-btn" onclick="rateUs(4)">★</button>
+                  <button class="star-btn" onclick="rateUs(5)">★</button>
+                </div>
+              </div>
+
+              <!-- File upload -->
+              <div class="form-group form-col-full">
+                <label class="form-label">إرفاق صورة (اختياري)</label>
+                <label class="file-upload">
+                  <input type="file" accept="image/*" onchange="handleFile(this)" />
+                  <div class="file-upload__icon">📎</div>
+                  <p class="file-upload__text"><span>انقري لاختيار صورة</span> أو اسحبيها هنا</p>
+                  <p id="fileName" style="font-size:var(--text-xs);color:var(--color-primary);margin-top:4px;"></p>
+                </label>
+              </div>
+            </div>
+
+            <button class="contact-submit" onclick="submitForm()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              إرسال الرسالة
+            </button>
+          </div>
+
+          <!-- Success -->
+          <div class="form-success" id="formSuccess">
+            <div class="form-success__icon">✅</div>
+            <h3 class="form-success__title">تم إرسال رسالتك!</h3>
+            <p class="form-success__msg">شكراً لتواصلك معنا.<br/>سيقوم فريقنا بالرد عليك خلال ٢٤ ساعة على البريد أو الجوال.</p>
+            <button class="btn btn--primary" onclick="resetForm()">إرسال رسالة أخرى</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- FAQ -->
+    <section class="faq-section">
+      <div class="container">
+        <div class="section__header" data-animate>
+          <span class="section__eyebrow">الأسئلة الشائعة</span>
+          <h2 class="section__title">أسئلة كثيراً ما تسألينها</h2>
+        </div>
+        <div class="faq-grid">
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              كيف أتابع طلبي بعد الشراء؟
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">ستصلك رسالة نصية فور تأكيد الطلب برقم التتبع. يمكنك أيضاً متابعة طلبك من داشبورد حسابك تحت قسم "طلباتي".</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              ما هي سياسة الإرجاع والاستبدال؟
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">نوفر ضمان إرجاع مجاني خلال ١٤ يوم من الاستلام في حال وجود عيب في المنتج أو عدم مطابقته للوصف.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              كيف أنضم كحرفية للمنصة؟
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">سجلي حساباً واختاري "حرفية" كنوع حساب. بعدها فريقنا سيتواصل معك خلال ٤٨ ساعة للتحقق وتفعيل متجرك.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              ما هي طرق الدفع المتاحة؟
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">نقبل Visa، Mastercard، PayPal، والدفع عند الاستلام نقداً في جميع مدن الضفة الغربية.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              هل يمكنني طلب منتج مخصص؟
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">بالتأكيد! تواصلي مع الحرفية مباشرة عبر المنصة وأخبريها بتفاصيل المنتج المطلوب. معظم حرفياتنا سعيدات بطلبات التخصيص.</div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              ما هي مناطق التوصيل؟
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="faq-answer">نوصل لجميع مدن الضفة الغربية وقطاع غزة. نعمل على توسيع خدمة التوصيل للشتات الفلسطيني قريباً.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <p class="footer__logo">حرفة</p>
+          <p class="footer__desc">منصة رقمية تحتفي بالحرف اليدوية الفلسطينية</p>
+        </div>
+        <div>
+          <h4 class="footer__heading">المتجر</h4>
+          <ul class="footer__links">
+            <li><a href="shop.html" class="footer__link">جميع المنتجات</a></li>
+            <li><a href="shop.html?cat=embroidery" class="footer__link">التطريز</a></li>
+            <li><a href="shop.html?cat=pottery" class="footer__link">الخزف</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer__heading">المنصة</h4>
+          <ul class="footer__links">
+            <li><a href="about.html" class="footer__link">من نحن</a></li>
+            <li><a href="artisans.html" class="footer__link">الحرفيات</a></li>
+            <li><a href="contact.html" class="footer__link">تواصل معنا</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="footer__heading">المساعدة</h4>
+          <ul class="footer__links">
+            <li><a href="#" class="footer__link">الأسئلة الشائعة</a></li>
+            <li><a href="#" class="footer__link">سياسة الإرجاع</a></li>
+            <li><a href="#" class="footer__link">الشروط والأحكام</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="footer__divider" />
+      <div class="footer__bottom">
+        <p>© ٢٠٢٥ حرفة. جميع الحقوق محفوظة</p>
+        <p>صُنع بـ ♡ دعماً للحرفيات الفلسطينيات</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/app.js"></script>
+  <script>
+    let selectedRating = 0;
+
+    function selectSubject(btn) {
+      document.querySelectorAll('.subject-tab').forEach(t => t.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
+    function rateUs(n) {
+      selectedRating = n;
+      document.querySelectorAll('.star-btn').forEach((s, i) => {
+        s.classList.toggle('active', i < n);
+      });
+    }
+
+    function handleFile(input) {
+      if (input.files[0]) {
+        document.getElementById('fileName').textContent = '✓ ' + input.files[0].name;
+      }
+    }
+
+    function submitForm() {
+      document.getElementById('contactFormContent').style.display = 'none';
+      document.getElementById('formSuccess').classList.add('visible');
+    }
+
+    function resetForm() {
+      document.getElementById('contactFormContent').style.display = 'block';
+      document.getElementById('formSuccess').classList.remove('visible');
+    }
+
+    function toggleFaq(btn) {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    }
+
+    const toggle = document.querySelector('.navbar__mobile-toggle');
+    if (window.innerWidth <= 768) toggle.style.display = 'flex';
+    window.addEventListener('resize', () => {
+      toggle.style.display = window.innerWidth <= 768 ? 'flex' : 'none';
+    });
+  </script>
+</body>
+</html>
